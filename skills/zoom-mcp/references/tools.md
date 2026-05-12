@@ -15,9 +15,12 @@ tool list and schemas.
 
 The main Zoom MCP server exposes these tools:
 
-- `get_meeting_assets`
 - `search_meetings`
+- `create_new_file_with_markdown`
+- `search_zoom`
+- `get_meeting_assets`
 - `get_recording_resource`
+- `get_file_content`
 - `recordings_list`
 
 The server did **not** expose older inferred tool names such as `list_meetings`,
@@ -41,6 +44,10 @@ The dedicated Zoom Docs MCP server exposes these documented tools:
 
 - `create_file_with_content`
 - `get_file_content`
+
+The main Zoom MCP server also exposes Docs-capable tools, but the names differ:
+- main `zoom-mcp`: `create_new_file_with_markdown`, `get_file_content`
+- dedicated `zoom-docs-mcp`: `create_file_with_content`, `get_file_content`
 
 ### `create_file_with_content`
 
@@ -68,7 +75,27 @@ Retrieve a Zoom Docs document in Markdown format.
 |-----------|------|----------|-------------|
 | `fileId` | string | **Yes** | The unique identifier of the document file |
 
+### `create_new_file_with_markdown`
+
+Create a Zoom Docs document from Markdown content through the main Zoom MCP server.
+
+**Verified scope:** `docs:write:import`
+
+Use the live tool schema from `tools/list` for exact parameter names. This tool is equivalent
+in purpose to `create_file_with_content` on the dedicated Zoom Docs MCP server, but the main
+server exposes it under a different name.
+
 ## Meeting Discovery and Assets
+
+### `search_zoom`
+
+Search across Zoom content using the main Zoom MCP server.
+
+**Verified scope family:** `ai_companion:read:search`
+
+Use this for broad Zoom search across supported meeting, chat, and document content. Prefer
+`search_meetings` when the user specifically wants meeting discovery and the meeting-specific
+tool schema fits the task.
 
 ### `search_meetings`
 
@@ -146,4 +173,4 @@ summary-like, and playback-oriented resources.
 - Discovery happens through MCP protocol `tools/list`, not through a dedicated Zoom utility tool.
 - Re-run `tools/list` whenever you need to confirm whether the current tool list has changed.
 - Do not rely on older examples that use `query`, `startDate`, `endDate`, or `pageSize`; the current live schema uses `q`, `from`, `to`, and `page_size`.
-- Do not rely on older examples that route Docs creation through the main `zoom-mcp` server; Zoom Docs now have a dedicated `zoom-docs-mcp` server in this plugin.
+- Zoom Docs work may be available through both the main `zoom-mcp` server and the dedicated `zoom-docs-mcp` server. Check `tools/list` on the active server and use the exact exposed tool name.
