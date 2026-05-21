@@ -10,7 +10,7 @@ Primary capabilities:
 - choose the right Zoom surface for a use case
 - plan Zoom integrations across REST APIs, SDKs, webhooks, OAuth, and MCP
 - debug broken Zoom integrations
-- build focused Zoom implementations for meetings, bots, chat, phone, contact center, and virtual agent workflows
+- build focused Zoom implementations for meetings, bots, chat, phone, contact center, virtual agent, and AI Services workflows
 - provide deep product-specific reference material under `skills/`
 
 ## Primary Entry Skills

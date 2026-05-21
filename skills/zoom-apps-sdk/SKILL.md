@@ -653,8 +653,6 @@ Complete working code. Get something running before diving into advanced feature
 
 Based on **@zoom/appssdk v0.16.x** (latest: 0.16.26+)
 
----
+## Operations
 
-**Happy coding!**
-
-Start with [Architecture](concepts/architecture.md) to understand the pattern, then [Quick Start](examples/quick-start.md) to build your first app.
+- [RUNBOOK.md](RUNBOOK.md) - 5-minute preflight and debugging checklist.

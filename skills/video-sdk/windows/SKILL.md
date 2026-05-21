@@ -1008,12 +1008,6 @@ The universal 3-step pattern:
 
 Based on **Zoom Video SDK for Windows v2.x**
 
----
-
-**Happy coding!**
-
-Remember: The [SDK Architecture Pattern](concepts/sdk-architecture-pattern.md) is your key to unlocking the entire SDK. Read it first!
-
 ## Operations
 
 - [RUNBOOK.md](RUNBOOK.md) - 5-minute preflight and debugging checklist.

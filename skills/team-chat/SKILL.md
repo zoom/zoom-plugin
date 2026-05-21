@@ -15,6 +15,12 @@ triggers:
 
 Background reference for Zoom Team Chat integrations. Use this after the workflow is clear, especially when the Team Chat API versus Chatbot API distinction matters.
 
+For agent-driven MCP tooling that sends or edits messages, manages Team Chat channels, or adds
+channel members through Zoom's hosted MCP server, use
+[../zoom-mcp/team-chat/SKILL.md](../zoom-mcp/team-chat/SKILL.md). Keep this skill as the
+default for deterministic REST API implementation, chatbot apps, webhooks, retry logic, and
+production backend control.
+
 ## Read This First (Critical)
 
 There are two different integration types and they are not interchangeable:

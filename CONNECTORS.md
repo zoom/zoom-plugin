@@ -9,9 +9,15 @@ This plugin works in two modes:
 
 | Connector | Endpoint | Use For |
 |---|---|---|
-| `zoom-mcp` | `https://mcp.zoom.us/mcp/zoom/streamable` | Zoom-hosted MCP workflows for meetings, recordings, summaries, and meeting assets |
+| `zoom-mcp` | `https://mcp.zoom.us/mcp/zoom/streamable` | Zoom-hosted MCP workflows for meeting search, cross-Zoom search, recordings, summaries, meeting assets, and main-server Zoom Docs tools |
 | `zoom-docs-mcp` | `https://mcp.zoom.us/mcp/docs/streamable` | Zoom Docs creation, retrieval, and Markdown-based document workflows |
 | `zoom-whiteboard-mcp` | `https://mcp.zoom.us/mcp/whiteboard/streamable` | Whiteboard-specific MCP workflows |
+
+## Optional MCP Surfaces Not Bundled by Default
+
+| Surface | Endpoint | Notes |
+|---|---|---|
+| Team Chat MCP | `https://mcp.zoom.us/mcp/team_chat/streamable` | Write-capable Team Chat MCP tools are documented in [`skills/zoom-mcp/team-chat/`](./skills/zoom-mcp/team-chat/), but this server is not registered in [`.mcp.json`](./.mcp.json) by default. |
 
 ## Authentication
 
@@ -44,6 +50,7 @@ export ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 - Live MCP tool discovery and execution against Zoom-hosted MCP servers
 - Real meeting-search, recording-resource, and document workflows
 - Whiteboard-specific tool access when applicable
+- Cross-Zoom search through the main `search_zoom` tool when the token has `ai_companion:read:search`
 
 ## Notes
 

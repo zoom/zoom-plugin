@@ -24,6 +24,17 @@ sources. Zoom exposes hosted MCP surfaces that clients can discover and call ove
 Whiteboard MCP is covered by the dedicated skill
 [../whiteboard/SKILL.md](../whiteboard/SKILL.md).
 
+### Team Chat MCP
+
+| Transport | URL |
+|-----------|-----|
+| Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/team_chat/streamable` |
+| SSE (fallback) | `https://mcp.zoom.us/mcp/team_chat/sse` |
+
+Team Chat MCP is documented by the optional child skill
+[../team-chat/SKILL.md](../team-chat/SKILL.md), but it is not registered in this plugin's
+`.mcp.json` by default.
+
 ## Discovery Model
 
 Do not hardcode tool counts in client logic.
@@ -38,6 +49,7 @@ Use the MCP protocol `tools/list` response as the current source of truth for:
 
 The current Zoom MCP surface is centered on:
 - semantic meeting search
+- cross-Zoom search over meetings, Team Chat, Zoom Docs, and My Notes
 - meeting asset retrieval
 - recording resource retrieval
 - Zoom Docs creation from Markdown
@@ -66,6 +78,14 @@ Whiteboard MCP protected-resource metadata currently exposes:
 - `whiteboard:write:whiteboard`
 - `whiteboard:read:list_whiteboards`
 - `whiteboard:read:whiteboard`
+
+Team Chat MCP protected-resource metadata currently exposes:
+- `team_chat:write:user_message`
+- `team_chat:update:user_message`
+- `team_chat:write:contact_information`
+- `team_chat:write:user_channel`
+- `team_chat:update:user_channel`
+- `team_chat:write:members`
 
 ## Retrieval Model
 

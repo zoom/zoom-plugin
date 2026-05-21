@@ -67,6 +67,16 @@ Curated list of official repositories from Zoom for development. Organized by pr
 
 ---
 
+## AI Services
+
+### Official Samples (by Zoom)
+
+| Repository | Stars | Description |
+|------------|-------|-------------|
+| [ai-services-quickstart](https://github.com/zoom/ai-services-quickstart) | - | Node.js/Express + React playground for Scribe, Summarizer, and Translator |
+
+---
+
 ## Webhooks
 
 ### Official Samples (by Zoom)
@@ -156,3 +166,10 @@ Curated list of official repositories from Zoom for development. Organized by pr
 | [probesdk-web](https://github.com/zoom/probesdk-web) | 3 | Test device/network/server connection |
 
 ---
+
+## Inclusion Criteria
+
+Use these criteria when evaluating whether a repository belongs in this list:
+- Must be from [github.com/zoom](https://github.com/zoom)
+- Demonstrates Zoom SDK/API usage
+- Has working code (not just documentation)

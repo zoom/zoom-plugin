@@ -890,12 +890,6 @@ Based on **Zoom OAuth API v2** (2024+)
 
 **Deprecated:** JWT App Type (June 2023)
 
----
-
-**Happy coding!**
-
-Remember: Start with [OAuth Flows](concepts/oauth-flows.md) to understand which flow fits your use case!
-
 ## Environment Variables
 
 - See [references/environment-variables.md](references/environment-variables.md) for standardized `.env` keys and where to find each value.

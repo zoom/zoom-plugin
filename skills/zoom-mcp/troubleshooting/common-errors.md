@@ -32,6 +32,10 @@ for the tool you called.
 
 **Server-required scope:** `meeting:read:assets`
 
+### `search_zoom` fails on scope
+
+**Server-required scope:** `ai_companion:read:search`
+
 ### `recordings_list` fails on scope
 
 **Server-required scope:** `cloud_recording:read:list_user_recordings`
@@ -40,7 +44,7 @@ for the tool you called.
 
 **Server-required scope:** `cloud_recording:read:content`
 
-### `create_file_with_content` fails on scope
+### `create_new_file_with_markdown` or `create_file_with_content` fails on scope
 
 **Required scope:** `docs:write:import`
 
@@ -63,6 +67,27 @@ Common causes:
 - widen `from` and `to`
 - try shorter search terms
 - fall back to `recordings_list`
+
+### `search_zoom` returns no useful chat/docs results
+
+Common causes:
+- missing `ai_companion:read:search`
+- `search_entities` omitted or set to the wrong `entity_type`
+- local time references were not converted to ISO 8601 UTC
+- `doc_view` is too narrow, such as `notes` when the user wanted all Docs
+
+**Fixes:**
+- use `entity_type: "chat"` for Team Chat messages
+- use `entity_type: "zoom_doc"` for Zoom Docs and My Notes
+- use `doc_view: "notes"` only when the user asks for My Notes or meeting notes
+- widen or remove `from` and `to`
+
+### `get_file_content` cannot read a returned document
+
+Most often this means one of these:
+- missing `docs:read:export`
+- the wrong identifier was passed; use the returned `file_id`
+- user can see search metadata but lacks permission to export the file content
 
 ### Meeting assets retrieval fails even with a valid token
 
@@ -95,10 +120,12 @@ sent to the wrong MCP surface.
 - Zoom MCP: `https://mcp.zoom.us/mcp/zoom/streamable`
 - Zoom Docs MCP: `https://mcp.zoom.us/mcp/docs/streamable`
 - Whiteboard MCP: `https://mcp.zoom.us/mcp/whiteboard/streamable`
+- Team Chat MCP: `https://mcp.zoom.us/mcp/team_chat/streamable`
 - re-run `tools/list`
 - use the current tool names exposed by that server
 - if the request is Zoom Docs-specific, use the dedicated Docs MCP server
 - if the request is Whiteboard-specific, route to [../whiteboard/SKILL.md](../whiteboard/SKILL.md)
+- if the request is write-capable Team Chat MCP, route to [../team-chat/SKILL.md](../team-chat/SKILL.md)
 
 ### MCP server not appearing in the client
 

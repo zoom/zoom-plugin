@@ -63,7 +63,12 @@ The plugin also keeps the original Zoom product-specific reference library under
 - [`skills/webhooks/`](skills/webhooks/)
 - [`skills/websockets/`](skills/websockets/)
 - [`skills/oauth/`](skills/oauth/)
+- [`skills/team-chat/`](skills/team-chat/)
+- [`skills/scribe/`](skills/scribe/)
+- [`skills/summarizer/`](skills/summarizer/)
+- [`skills/translator/`](skills/translator/)
 - [`skills/zoom-mcp/`](skills/zoom-mcp/)
+- [`skills/zoom-mcp/team-chat/`](skills/zoom-mcp/team-chat/)
 
 ## Example Workflows
 
@@ -95,6 +100,8 @@ The plugin also keeps the original Zoom product-specific reference library under
 
 See [CONNECTORS.md](CONNECTORS.md). The plugin works standalone from the bundled skills, and gets supercharged when Claude can use the bundled Zoom MCP servers from [`.mcp.json`](.mcp.json).
 
+The bundled MCP servers are the main Zoom MCP server, Zoom Docs MCP server, and Zoom Whiteboard MCP server. Team Chat MCP is documented as an optional child skill under [`skills/zoom-mcp/team-chat/`](skills/zoom-mcp/team-chat/), but is not registered in [`.mcp.json`](.mcp.json) by default.
+
 ## Cross-Platform Notes
 
 This repo is packaged first as a Claude plugin, but it also includes [AGENTS.md](AGENTS.md) for agent ecosystems that use a repo-level discovery file. The reusable core remains the `skills/` tree and its `SKILL.md` files.
@@ -111,6 +118,9 @@ Zoom Plugin/
 │   ├── plan-zoom-integration/
 │   ├── debug-zoom/
 │   ├── setup-zoom-mcp/
+│   ├── scribe/
+│   ├── summarizer/
+│   ├── translator/
 │   ├── start/
 │   ├── choose-zoom-approach/
 │   ├── setup-zoom-oauth/

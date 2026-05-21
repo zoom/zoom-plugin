@@ -8,14 +8,18 @@ Quick diagnostic checklist before using the Zoom MCP server.
 ```bash
 echo "${ZOOM_MCP_ACCESS_TOKEN:+set}"
 echo "${ZOOM_DOCS_MCP_ACCESS_TOKEN:+set}"
+echo "${ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN:+set}"
 ```
 If empty, export the relevant token using [concepts/oauth-setup.md](concepts/oauth-setup.md).
 
 **2. Tool discovery working?**
-- Confirm the client can see `recordings_list`, `search_meetings`, `get_meeting_assets`,
-  and `get_recording_resource`.
+- Confirm the client can see 7 default Zoom MCP tools: `search_meetings`,
+  `create_new_file_with_markdown`, `search_zoom`, `get_meeting_assets`,
+  `get_recording_resource`, `get_file_content`, and `recordings_list`.
 - For the dedicated Zoom Docs server, confirm the client can see `create_file_with_content`
   and `get_file_content`.
+- Team Chat MCP is documented in [team-chat/SKILL.md](team-chat/SKILL.md), but it is not
+  registered in this plugin's `.mcp.json` by default.
 - If your client exposes raw protocol inspection, verify `tools/list` succeeds.
 - Compare the visible tools with [references/tools.md](references/tools.md).
 
@@ -27,12 +31,15 @@ Minimum Zoom MCP scopes for this guide:
 - `meeting:read:assets` — View a meeting's assets
 - `cloud_recording:read:list_user_recordings` — Lists all cloud recordings for a user.
 - `cloud_recording:read:content` — read recording content scope
+- `docs:write:import` — Create Zoom Docs from Markdown through the main Zoom MCP server
+- `docs:read:export` — Read Zoom Docs or My Notes Markdown content
 
 Minimum Zoom Docs MCP scopes:
 - `docs:write:import` — Create new file by import
 - `docs:read:export` — Read file content in Markdown format
 
 Whiteboard uses a separate scope set. See [whiteboard/SKILL.md](whiteboard/SKILL.md).
+Team Chat write/update tools use a separate scope set. See [team-chat/SKILL.md](team-chat/SKILL.md).
 
 **4. AI Companion features enabled?**
 
@@ -47,8 +54,10 @@ meeting assets, or transcript-rich recording content to be useful.
 | `-32001 Access token is required` | Token env var missing or empty | Export `ZOOM_MCP_ACCESS_TOKEN`, then restart Claude Code |
 | `-32001 Invalid access token, does not contain scopes:[meeting:read:search]` | Missing semantic-search scope | Add `meeting:read:search` and mint a new user token |
 | `-32001 Invalid access token, does not contain scopes:[meeting:read:assets,...]` | Missing meeting-assets scope | Add `meeting:read:assets` and mint a new user token |
+| `-32001 Invalid access token, does not contain scopes:[ai_companion:read:search]` | Missing cross-Zoom search scope | Add `ai_companion:read:search` and mint a new user token |
 | `-32001 Invalid access token, does not contain scopes:[cloud_recording:read:list_user_recordings,...]` | Missing recordings-list scope | Add `cloud_recording:read:list_user_recordings` |
 | `-32001 Invalid access token, does not contain scopes:[cloud_recording:read:content]` | Missing recording-content scope | Add `cloud_recording:read:content` |
+| `-32001 Invalid access token, does not contain scopes:[docs:read:export]` | Missing Docs export scope | Add `docs:read:export` and mint a new user token |
 | `-32602 Can not found tool: ... in this MCP Server` | Wrong endpoint surface or wrong tool name | Re-run `tools/list` and use the current tool names for the active MCP server |
 | `-32603 Call handle error` | Missing required parameters or server-side call handling failure | Re-check required arguments against the live schema and retry |
 | `Upstream API returned error status code: 400 ... invalid param` | Invalid parameter value passed through to the underlying Zoom API | Fix the specific argument value, such as `parent_id` for Docs creation on the dedicated Docs server |

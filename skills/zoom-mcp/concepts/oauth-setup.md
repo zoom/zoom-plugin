@@ -94,6 +94,8 @@ Add the MCP-specific granular scopes required by the tools you want to use.
 
 ### Main Zoom MCP server
 
+Required scopes, accurate as of 10 Apr 2026:
+
 | Product Area | Scope | Zoom label | Needed for |
 |--------------|-------|------------|------------|
 | AI Companion | `ai_companion:read:search` | Search across Zoom Meeting, Zoom Chat, and Zoom Doc, returning the most relevant results based on the query. | semantic MCP search |
@@ -116,9 +118,15 @@ For the dedicated Zoom Docs MCP connector:
 - add `docs:read:export` if you want Docs retrieval
 - export the resulting token as `ZOOM_DOCS_MCP_ACCESS_TOKEN`
 
+For the optional Team Chat MCP server:
+- this plugin documents the server, but does not register it in `.mcp.json` by default
+- use [../team-chat/SKILL.md](../team-chat/SKILL.md) for endpoint, scopes, and write-safety rules
+
 ### Dedicated Zoom Docs MCP server
 
 For `https://mcp.zoom.us/mcp/docs/streamable`:
+
+Documented tool scopes, accurate as of 10 Apr 2026:
 
 | Tool | Required scope |
 |------|----------------|
@@ -128,6 +136,8 @@ For `https://mcp.zoom.us/mcp/docs/streamable`:
 ### Dedicated Zoom Whiteboard MCP server
 
 For `https://mcp.zoom.us/mcp/whiteboard/streamable`:
+
+Documented tool scopes, accurate as of 10 Apr 2026:
 
 | Tool | Required scope |
 |------|----------------|
@@ -144,6 +154,21 @@ For `https://mcp.zoom.us/mcp/whiteboard/streamable`:
 | `update_a_whiteboard_collaborator` | `whiteboard:update:collaborator:admin` |
 
 Whiteboard MCP uses a separate scope set. See [../whiteboard/SKILL.md](../whiteboard/SKILL.md).
+
+### Optional Zoom Team Chat MCP server
+
+For `https://mcp.zoom.us/mcp/team_chat/streamable`:
+
+Documented tool scopes, accurate as of 10 Apr 2026:
+
+| Tool | Required scope |
+|------|----------------|
+| `zoom_chat_message_send` | `team_chat:write:user_message` |
+| `zoom_chat_message_update` | `team_chat:update:user_message` |
+| `zoom_chat_contact_add` | `team_chat:write:contact_information` |
+| `zoom_chat_channel_create` | `team_chat:write:user_channel` |
+| `zoom_chat_channel_update` | `team_chat:update:user_channel` |
+| `zoom_chat_channel_members_add` | `team_chat:write:members` |
 
 The other Zoom MCP servers have different scope requirements based on the published Zoom docs:
 - https://developers.zoom.us/docs/mcp/servers/connect-to-zoom-mcp-servers/
@@ -201,8 +226,9 @@ export ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN="YOUR_WHITEBOARD_ACCESS_TOKEN"
 Verification:
 - restart Claude Code or re-enable the plugin so the bundled MCP server restarts with the token
 - in Claude Code, use [`/setup-zoom-mcp`](../../setup-zoom-mcp/SKILL.md) after exporting the token
-- confirm the client can see `recordings_list`, `search_meetings`, `get_meeting_assets`,
-  and `get_recording_resource`
+- confirm the client can see 7 default Zoom MCP tools: `search_meetings`,
+  `create_new_file_with_markdown`, `search_zoom`, `get_meeting_assets`,
+  `get_recording_resource`, `get_file_content`, and `recordings_list`
 - for the dedicated Docs server, confirm the client can see `create_file_with_content`
   and `get_file_content`
 - if your client exposes protocol inspection, use `tools/list` as the authority for the live catalog
@@ -237,6 +263,7 @@ ZOOM_CLIENT_ID=your_client_id
 ZOOM_CLIENT_SECRET=your_client_secret
 ZOOM_MCP_ACCESS_TOKEN=your_access_token
 ZOOM_DOCS_MCP_ACCESS_TOKEN=your_docs_access_token
+ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN=your_whiteboard_access_token
 ZOOM_REFRESH_TOKEN=your_refresh_token
 ```
 

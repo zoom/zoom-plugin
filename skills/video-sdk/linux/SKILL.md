@@ -432,12 +432,6 @@ SDK requires bundled Qt5 libraries, NOT system Qt5.
 
 Based on **Zoom Video SDK for Linux v2.x**
 
----
-
-**Happy coding!**
-
-Remember: The [SDK Architecture Pattern](concepts/sdk-architecture-pattern.md) is your key to unlocking the entire SDK. Read it first!
-
 ## Operations
 
 - [RUNBOOK.md](RUNBOOK.md) - 5-minute preflight and debugging checklist.

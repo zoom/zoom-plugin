@@ -1,7 +1,8 @@
 # Create a Zoom Doc
 
-Use the dedicated `zoom-docs-mcp` server for Zoom Docs creation and retrieval.
-The official documented docs tools are `create_file_with_content` and `get_file_content`.
+Use either the main `zoom-mcp` server or the dedicated `zoom-docs-mcp` server for Zoom Docs
+creation and retrieval. The main server exposes `create_new_file_with_markdown`; the dedicated
+Docs server exposes `create_file_with_content` and `get_file_content`.
 
 ## Required Scope
 
@@ -28,10 +29,13 @@ get_meeting_assets
 ### Step 2: Create the Zoom Doc
 
 ```text
-create_file_with_content
+create_new_file_with_markdown
   file_name: "Q1 Planning — Action Items"
   content: "# Action Items\n\n- Owner: ..."
 ```
+
+If using the dedicated `zoom-docs-mcp` server, call `create_file_with_content` with the same
+Markdown content.
 
 Optional parameter:
 - `parent_id` to place the document under a specific folder or parent object

@@ -573,8 +573,6 @@ RTMS uses **two separate WebSocket connections**:
 
 Based on **Zoom RTMS SDK v1.x** and official documentation as of 2026.
 
----
+## Operations
 
-**Happy coding!**
-
-Remember: Start with [SDK Quickstart](examples/sdk-quickstart.md) for the fastest path, or [Manual WebSocket](examples/manual-websocket.md) if you need full control.
+- [RUNBOOK.md](RUNBOOK.md) - 5-minute preflight and debugging checklist.

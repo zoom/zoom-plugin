@@ -41,6 +41,8 @@ Plan a Zoom MCP workflow and decide when to use MCP alone versus a hybrid REST A
 ## Server-Specific Scope Sets
 
 Main Zoom MCP server: `https://mcp.zoom.us/mcp/zoom/streamable`
+
+Required scopes, accurate as of 10 Apr 2026:
 - `ai_companion:read:search`
 - `meeting:read:search`
 - `meeting:read:assets`
@@ -50,10 +52,14 @@ Main Zoom MCP server: `https://mcp.zoom.us/mcp/zoom/streamable`
 - `docs:read:export`
 
 Zoom Docs MCP server: `https://mcp.zoom.us/mcp/docs/streamable`
+
+Documented tool scopes, accurate as of 10 Apr 2026:
 - `create_file_with_content` → `docs:write:import`
 - `get_file_content` → `docs:read:export`
 
 Zoom Whiteboard MCP server: `https://mcp.zoom.us/mcp/whiteboard/streamable`
+
+Documented tool scopes, accurate as of 10 Apr 2026:
 - `add_a_whiteboard_collaborator` → `whiteboard:write:collaborator:admin`
 - `create_a_whiteboard` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_by_script` → `whiteboard:write:whiteboard`
@@ -65,6 +71,18 @@ Zoom Whiteboard MCP server: `https://mcp.zoom.us/mcp/whiteboard/streamable`
 - `get_a_whiteboard_collaborator` → `whiteboard:read:list_collaborators:admin`
 - `list_whiteboards` → `whiteboard:read:list_whiteboards:admin`
 - `update_a_whiteboard_collaborator` → `whiteboard:update:collaborator:admin`
+
+Optional Zoom Team Chat MCP server: `https://mcp.zoom.us/mcp/team_chat/streamable`
+
+This plugin documents Team Chat MCP, but does not register it in `.mcp.json` by default.
+Use it only when the user explicitly wants write-capable Team Chat MCP tooling.
+
+- `zoom_chat_message_send` → `team_chat:write:user_message`
+- `zoom_chat_message_update` → `team_chat:update:user_message`
+- `zoom_chat_contact_add` → `team_chat:write:contact_information`
+- `zoom_chat_channel_create` → `team_chat:write:user_channel`
+- `zoom_chat_channel_update` → `team_chat:update:user_channel`
+- `zoom_chat_channel_members_add` → `team_chat:write:members`
 
 ## Related Skills
 
