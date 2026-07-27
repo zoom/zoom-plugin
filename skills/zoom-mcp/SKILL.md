@@ -69,9 +69,13 @@ server in `.mcp.json` by default.
 > [Marketplace app management](../rest-api/references/marketplace-apps.md) to create or
 > validate the General App, select user/admin scopes for MCP tools, and understand credential
 > response shapes before minting the bearer token passed to the MCP server. Start from the
-> [default Zoom MCP template](../rest-api/assets/marketplace-apps/zoom-mcp-default.json), or
+> [default Zoom MCP template](../rest-api/assets/marketplace-apps/marketplace-manifest-template-for-mcp-default.json), or
 > select the dedicated Team Chat or Whiteboard template from the
-> [Marketplace template selector](../rest-api/references/marketplace-app-templates.md).
+> [Marketplace template selector](../rest-api/references/marketplace-app-templates.md). Automated
+> selection must inspect the
+> [template index](../rest-api/assets/marketplace-apps/marketplace-manifest-template-index.json)
+> and require `app_type: general`, `usage: USER_OPERATION`, and
+> `supports_manifest_update: true`.
 
 ## Quick Start
 

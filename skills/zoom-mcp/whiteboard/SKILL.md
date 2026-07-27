@@ -30,7 +30,7 @@ Dedicated guidance for Zoom's Whiteboard MCP server.
 ## Authentication
 
 - Start app registration from the
-  [Whiteboard MCP template](../../rest-api/assets/marketplace-apps/zoom-mcp-whiteboard.json).
+  [Whiteboard MCP template](../../rest-api/assets/marketplace-apps/marketplace-manifest-template-for-mcp-whiteboard.json).
 - **User OAuth with Whiteboard scopes** is the documented path for Whiteboard MCP execution.
 - The bundled connector expects the token in `ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN`.
 

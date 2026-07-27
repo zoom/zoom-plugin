@@ -14,6 +14,55 @@ Authoritative endpoint inventory for Marketplace. This file mirrors the official
 - Scope names are defined per operation and frequently use granular scope names. Check the API Hub operation page for the exact scopes before implementation.
 - Use this file for endpoint discovery and inventory. Use `../examples/` for orchestration patterns, not as the canonical source of path names.
 
+## Bootstrap Requirement: Create the First App Manually
+
+Marketplace app creation is not self-bootstrapping. The create APIs require a Zoom OAuth
+access token, and that token must come from an app that already exists. For a new account or
+automation environment:
+
+1. An account owner, admin, or user with the required Zoom developer role manually creates the
+   first credential-bearing app in the Zoom App Marketplace.
+2. Add the exact Marketplace app-management scope required by the creation endpoint.
+3. Activate/install or authorize that bootstrap app as required by its app type.
+4. Mint an access token from the bootstrap app.
+5. Use that token to validate manifests and create subsequent apps through the Marketplace API.
+
+The bootstrap app can commonly be either:
+
+- a manually created **Server-to-Server OAuth app** for unattended same-account automation; or
+- a manually created **admin-managed General App** when an account admin will complete the
+  authorization-code flow.
+
+However, app type alone is not sufficient. The token must contain the scope for the exact
+endpoint, and the caller must satisfy its role restrictions:
+
+| Creation target | Endpoint | Required scope | Bootstrap guidance |
+|-----------------|----------|----------------|--------------------|
+| General App manifest | `POST /v2/marketplace/apps` | `marketplace:write:app` or `marketplace:write:app:admin` | An admin-managed General App or an S2S app with the accepted admin scope is suitable for account automation. The documented user scope also permits a user-authorized path where available. |
+| S2S OAuth or Meeting SDK app | `POST /v2/accounts/{accountId}/marketplace/apps` | `marketplace:write:app:master` | Requires the account owner/master-authorized path. Use a bootstrap app that can actually mint this master scope; do not assume `marketplace:write:app:admin` is equivalent. |
+
+Practical guardrails:
+
+- You cannot use the credentials of the app being created to authorize its own creation.
+- Confirm the returned token's granted `scope` before calling the API.
+- A scope appearing in an API description does not prove it is enabled for every account or
+  selectable on every app type; verify it in the bootstrap app's Marketplace scope picker.
+- Keep at least one working bootstrap app until a replacement app has successfully minted a
+  token and created a disposable test app.
+- Restrict the bootstrap app to Marketplace administration, store its secret/refresh token in a
+  secret manager, and do not reuse it as a general application credential.
+
+Official references:
+
+- Regular Marketplace API: https://developers.zoom.us/docs/api/marketplace/
+- Marketplace Master API: https://developers.zoom.us/docs/api/marketplace/ma/
+- General App OAuth setup: https://developers.zoom.us/docs/integrations/create/
+- Server-to-Server OAuth setup: https://developers.zoom.us/docs/internal-apps/create/
+
+For scenario-to-app-type selection, use the
+[Marketplace template selector](marketplace-app-templates.md) or its
+[machine-readable template index](../assets/marketplace-apps/marketplace-manifest-template-index.json).
+
 ## Auth Caveat: App-Owned Marketplace Scopes
 
 Some Marketplace app-management scopes require an app-owned access token from the OAuth
@@ -318,6 +367,11 @@ Export manifest:
 GET /v2/marketplace/apps/{appId}/manifest
 ```
 
+For the complete export, validate, full-replacement update, and read-back sequence, use
+[Marketplace Manifest Update Workflow](marketplace-manifest-update-workflow.md). For automated
+scenario selection, use the machine-readable
+[Marketplace template index](../assets/marketplace-apps/marketplace-manifest-template-index.json).
+
 Response shape:
 
 ```json
@@ -414,7 +468,7 @@ Read-only exports of existing apps on 2026-07-08 surfaced these useful shape pat
 | Chatbot app | `usage: "ADMIN_MANAGEMENT"`, `products: ["ZOOM_CHAT"]`, scope `imchat:bot`, `team_chat_subscription.enable: true`, slash command development message URL present, production message URL may be blank | [Team Chat chatbot](../../team-chat/SKILL.md) |
 | Webhook-heavy app | `event_subscription.enable: true` can appear even when `products: []`; event entries use `event_usage` such as `EVENT_FOR_USER` or `EVENT_FOR_ADMIN`; large event lists may not round-trip through validation unchanged | [Webhooks](../../webhooks/SKILL.md) and this Marketplace reference |
 | WebSocket event app | Account-level only; use S2S or admin-managed General App, then select WebSocket delivery in Features > Access because the public manifest schema does not expose a reliable one-shot field | [WebSockets](../../websockets/SKILL.md) |
-| Plugin SDK companion | `usage: "USER_OPERATION"`, scope `plugin_sdk:read:connection_meta`, PKCE for native clients, and `plugin_sdk.enable: true`; the OAuth user must match the user signed in to Zoom Workplace | [OAuth](../../oauth/SKILL.md) plus the official Plugin SDK docs |
+| Plugin SDK companion | `usage: "USER_OPERATION"`, scope `plugin_sdk:read:connection_meta`, PKCE for native clients, and `plugin_sdk.enable: true`; the OAuth user must match the user signed in to Zoom Workplace | [OAuth](../../oauth/SKILL.md) plus the official Plugin SDK documentation |
 | Claude MCP Connector / MCP API app | `usage: "USER_OPERATION"`, `products: []` or omitted, no Team Chat subscription, scopes for AI Companion search, docs import/export, meeting assets/search, recordings, or Team Chat MCP workflows | [Zoom MCP](../../zoom-mcp/SKILL.md) and [REST API](../SKILL.md) |
 
 Do not infer app behavior from `app_type` alone. Existing apps returned both `OAuthApp` and
@@ -517,8 +571,10 @@ account-scoped endpoint:
 - Set `active: true` only when `scopes` contains at least one valid scope. Use
   `active: false` to create an inactive draft.
 - Do not send a General App `manifest` for `s2s_oauth`; send top-level `scopes`.
-- Successful responses can include generated development and production credentials.
-  Capture them once and never log or commit client secrets.
+- S2S has a single credential state. The API labels that one pair
+  `development_credentials`; `production_credentials` is not expected for S2S. Meeting SDK
+  publishing has a separate development/production credential model. Capture S2S credentials
+  once and never log or commit client secrets.
 
 A live authorization probe on 2026-07-10 reached the account-scoped endpoint, but the supplied
 tokens lacked its required master scope:
@@ -530,9 +586,137 @@ tokens lacked its required master scope:
 }
 ```
 
-No app was created in the probes. Use the account-scoped route and a token containing
-`marketplace:write:app:master`; do not rely on the broader operation description for the regular
-create endpoint until runtime behavior changes.
+That earlier probe did not create an app. A follow-up production probe on **2026-07-13** used a
+token containing `marketplace:write:app:master` and confirmed the complete reversible flow:
+
+- `POST /v2/accounts/{accountId}/marketplace/apps` returned HTTP `201`.
+- `app_type: "s2s_oauth"` created an inactive S2S OAuth app.
+- The requested `meeting:read:meeting:admin` scope was preserved in the response.
+- `DELETE /v2/marketplace/apps/{appId}` returned HTTP `200` with an empty body and removed the
+  temporary app. The live delete status therefore differs from the documented `204` response.
+
+Use the account-scoped route and a token containing `marketplace:write:app:master`; do not rely
+on the broader operation description for the regular create endpoint until runtime behavior
+changes. Treat returned client credentials as one-time secrets even when running an inactive
+creation probe.
+
+### S2S Create, Token, and Manifest Shapes (Verified 2026-07-13)
+
+S2S OAuth uses a native top-level request, not the General App manifest model.
+
+Minimal inactive request (scopes can be omitted):
+
+```json
+{
+  "app_type": "s2s_oauth",
+  "app_name": "My S2S App",
+  "contact_name": "Developer Name",
+  "contact_email": "developer@example.com",
+  "company_name": "Example Company",
+  "active": false
+}
+```
+
+Active request (at least one valid scope is required):
+
+```json
+{
+  "app_type": "s2s_oauth",
+  "app_name": "My Active S2S App",
+  "contact_name": "Developer Name",
+  "contact_email": "developer@example.com",
+  "company_name": "Example Company",
+  "active": true,
+  "scopes": [
+    "meeting:read:meeting:admin"
+  ]
+}
+```
+
+Do not send `manifest` or `publish` for S2S. The live endpoint accepted malformed `manifest`
+values (including a string), `publish`, and unknown top-level fields, but silently ignored them.
+Permissive input handling is not manifest support.
+
+Observed HTTP `201` create response fields:
+
+| Field | Observed type/shape | Notes |
+|-------|---------------------|-------|
+| `app_id` | string | Identifier required for later management and cleanup |
+| `app_name` | string | Echoes the requested name |
+| `app_type` | `"s2s_oauth"` | Native create response type |
+| `create_at` | date-time string | Live field is `create_at`, not documented `created_at` |
+| `dev_public_key` | `{ "enabled": boolean }` | Public-key feature state; no key material was returned in the probe |
+| `prod_public_key` | `{ "enabled": boolean }` | Production public-key feature state |
+| `development_credentials` | `{ "client_id": string, "client_secret": string }` | The single S2S credential pair; the field name does not imply a second production state |
+| `production_credentials` | absent by design | S2S has one credential state; do not treat this as an incomplete create response |
+| `scopes` | string array | Echoes retained valid scopes; this is not sufficient proof that a newly minted token has propagated them |
+
+The response does not echo `active`, `manifest`, `publish`, `company_name`, or contact fields.
+
+Observed validation and routing behavior:
+
+| Request case | HTTP/result | Implementation consequence |
+|--------------|-------------|----------------------------|
+| `active: false`, scopes omitted | `201`, `scopes: []` | Valid inactive draft |
+| `active: true`, valid scope | `201`, requested scope returned | Valid active app |
+| `active: true`, empty scopes | `404`, code `1500`, `invalid_scope_value` | Require at least one valid scope |
+| `active: false`, invalid scope | `201`, invalid scope silently removed | Compare returned scopes with requested scopes |
+| Malformed or wrong-type `manifest` | `201`, field ignored | Never infer S2S manifest support from create success |
+| `publish` or unknown top-level fields | `201`, fields ignored | Send only S2S-native fields |
+| Missing `contact_email` | `404`, code `1500`, missing required fields | Validate required fields client-side |
+| S2S sent to `POST /v2/marketplace/apps` | `404`, code `1500` directing account route | Use `/v2/accounts/{accountId}/marketplace/apps` |
+| Delete through `DELETE /v2/marketplace/apps/{appId}` | `200`, empty body | Accept `200` even though the schema documents `204`; verify removal with `GET /v2/marketplace/apps?type=account_created` |
+
+Token exchange after active S2S creation:
+
+```bash
+curl -X POST \
+  "https://zoom.us/oauth/token?grant_type=account_credentials&account_id=$ZOOM_ACCOUNT_ID" \
+  -u "$ZOOM_CLIENT_ID:$ZOOM_CLIENT_SECRET"
+```
+
+Observed HTTP `200` token response:
+
+```json
+{
+  "access_token": "<redacted>",
+  "token_type": "bearer",
+  "expires_in": 3599,
+  "scope": "space-delimited granted scopes",
+  "api_url": "https://api-us.zoom.us"
+}
+```
+
+The `scope` field can be absent or incomplete immediately after creation while the app/scopes
+propagate. A follow-up token exchange after 12 seconds contained the requested scopes. Use a
+bounded retry, verify the token response `scope`, and send API calls to the returned `api_url`
+instead of assuming the global API hostname.
+
+S2S manifest capability was tested with an active S2S token containing
+`marketplace:read:app:admin` and `marketplace:write:app:admin`:
+
+| Operation | Result |
+|-----------|--------|
+| `GET /v2/marketplace/apps/{appId}` | `200`; reported `app_type: "OAuthApp"`, `app_status: "unpublished"`, and the S2S scopes |
+| `GET /v2/marketplace/apps/{appId}/manifest` | `404`, code `1500`: `You can only export Draft General app's manifest now` |
+| `PUT /v2/marketplace/apps/{appId}/manifest` | `400`, `error: "invalid_manifest"`: `You can only update Draft General app now` |
+
+Therefore, do not use the generic `app_type: "OAuthApp"` returned by the information endpoint
+as proof that an S2S app is a General App. S2S configuration is managed through native fields
+and scopes; General App manifest export/update does not apply.
+
+### Delete Verification
+
+Treat the delete response as an acknowledgement, not the final cleanup assertion. After
+`DELETE /v2/marketplace/apps/{appId}` returns `200`, query:
+
+```text
+GET /v2/marketplace/apps?type=account_created&page_size=30
+```
+
+Confirm the deleted `app_id` is absent. A July 14, 2026 cleanup verified that two leftover S2S
+probe apps disappeared only after this account-created listing check. Do not delete by app name
+alone; use the exact `app_id` returned by the listing or create response.
 
 ## Coverage
 
