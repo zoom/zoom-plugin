@@ -18,14 +18,16 @@ Use this skill when auth is the blocker or when auth choices will shape the enti
 ## Workflow
 
 1. Determine the app model and who is authorizing whom.
-2. Choose the correct grant flow.
-3. Identify minimum scopes for the user flow.
-4. Define token storage and refresh behavior.
-5. Route into the deepest relevant reference docs only after the above is clear.
+2. Create or validate the Marketplace app and manifest through [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md).
+3. Choose the correct grant flow.
+4. Identify minimum scopes for the user flow.
+5. Define token storage and refresh behavior.
+6. Route into the deepest relevant reference docs only after the above is clear.
 
 ## Primary References
 
 - [oauth](../oauth/SKILL.md)
+- [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md)
 - [general](../general/SKILL.md)
 - [rest-api](../rest-api/SKILL.md)
 

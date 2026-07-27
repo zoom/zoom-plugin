@@ -176,7 +176,7 @@ When RTMS starts, Zoom sends a webhook. The event name and payload differ by pro
 |--------|----------|----------|-----------|
 | Webhook event | `meeting.rtms_started` | `webinar.rtms_started` | `session.rtms_started` |
 | Payload ID field | `meeting_uuid` | `meeting_uuid` (same!) | `session_id` |
-| App type | General App (OAuth) | General App (OAuth) | Video SDK App (SDK Key/Secret) |
+| App type | User-managed General App (OAuth) | User-managed General App (OAuth) | Video SDK App (SDK Key/Secret) |
 | Participants | All participants | Panelists have full streams; attendees may not | All participants |
 | Protocol after connect | Identical | Identical | Identical |
 

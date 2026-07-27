@@ -18,13 +18,15 @@ Use this skill for automation that joins meetings, captures media, or reacts to 
 ## Workflow
 
 1. Clarify whether the bot needs to join, observe, transcribe, summarize, or act.
-2. Route to Meeting SDK and RTMS as the core implementation path.
-3. Add REST API for meeting/resource management and Webhooks for asynchronous events when needed.
-4. Call out environment and lifecycle constraints early.
+2. Select the Marketplace app model for Meeting SDK, Meeting/Webinar RTMS, or Contact Center Voice RTMS before implementation.
+3. Route to Meeting SDK and RTMS as the core implementation path.
+4. Add REST API for meeting/resource management and Webhooks for asynchronous events when needed.
+5. Call out environment and lifecycle constraints early.
 
 ## Primary References
 
 - [meeting-sdk](../meeting-sdk/SKILL.md)
+- [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md)
 - [rtms](../rtms/SKILL.md)
 - [scribe](../scribe/SKILL.md)
 - [rest-api](../rest-api/SKILL.md)

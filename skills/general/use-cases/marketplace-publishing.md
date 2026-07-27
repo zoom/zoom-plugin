@@ -12,6 +12,12 @@ This guide covers building multi-tenant applications for the Zoom Marketplace, h
 - **zoom-rest-api** - Multi-tenant API calls
 - **webhooks** - Per-customer event handling
 
+## Registration First
+
+Use [setup-zoom-marketplace-app](../../setup-zoom-marketplace-app/SKILL.md) before implementing the multi-tenant runtime. Select and validate the General App manifest, scope ownership, callback URLs, domains, products, and event subscriptions with the [Marketplace template selector](../../rest-api/references/marketplace-app-templates.md).
+
+Treat the app-type labels below as deployment intent. Use the current General App `usage` and scope model from [Marketplace app management](../../rest-api/references/marketplace-apps.md) when creating or validating the app.
+
 ---
 
 ## App Types for Marketplace

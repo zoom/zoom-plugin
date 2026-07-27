@@ -19,13 +19,15 @@ Use this skill for embedded meeting experiences and meeting lifecycle implementa
 
 1. Confirm whether the user wants a Zoom meeting or a custom video session.
 2. Route to Meeting SDK if the user needs actual Zoom meetings.
-3. Pull in the relevant platform references.
-4. Add REST API only for meeting creation, resource management, or reporting.
-5. Add webhooks or RTMS only when the use case explicitly needs them.
+3. Create or validate the dedicated Meeting SDK Marketplace app before generating signatures.
+4. Pull in the relevant platform references.
+5. Add REST API only for meeting creation, resource management, or reporting.
+6. Add webhooks or RTMS only when the use case explicitly needs them.
 
 ## Primary References
 
 - [meeting-sdk](../meeting-sdk/SKILL.md)
+- [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md)
 - [rest-api](../rest-api/SKILL.md)
 - [webhooks](../webhooks/SKILL.md)
 - [rtms](../rtms/SKILL.md)

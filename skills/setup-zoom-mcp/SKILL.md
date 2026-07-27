@@ -19,10 +19,12 @@ Plan a Zoom MCP workflow and decide when to use MCP alone versus a hybrid REST A
 ## Workflow
 
 1. Determine whether the goal is deterministic automation, AI tool orchestration, or a hybrid.
-2. If MCP is appropriate, identify the likely Zoom MCP surface and transport assumptions.
-3. If MCP alone is not enough, define the REST API responsibilities separately.
-4. Call out auth, scope, and client capability constraints, especially the difference between Claude Cowork and Claude Code auth paths.
-5. End with a minimal proof-of-concept sequence.
+2. Identify whether the client uses Claude's published connector or requires a manually registered General App.
+3. For manual registration, select the default, Team Chat, or Whiteboard MCP template through [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md).
+4. If MCP is appropriate, identify the likely Zoom MCP surface and transport assumptions.
+5. If MCP alone is not enough, define the REST API responsibilities separately.
+6. Call out auth, scope, and client capability constraints, especially the difference between Claude Cowork and Claude Code auth paths.
+7. End with a minimal proof-of-concept sequence.
 
 ## Output
 
@@ -35,7 +37,7 @@ Plan a Zoom MCP workflow and decide when to use MCP alone versus a hybrid REST A
 ## Auth Rules
 
 - **Claude Cowork**: use the published Zoom connector and complete OAuth in Claude's connector flow.
-- **Claude Code**: manually complete Zoom user-level OAuth, export `ZOOM_MCP_ACCESS_TOKEN`, reconnect the plugin, then continue with this skill.
+- **Claude Code**: for manual OAuth, start from the matching Marketplace MCP template, complete user-level OAuth, export `ZOOM_MCP_ACCESS_TOKEN`, reconnect the plugin, then continue with this skill.
 - Scope requirements differ by MCP server. Use the server-specific scope sets below and the detailed tables in [../zoom-mcp/concepts/oauth-setup.md](../zoom-mcp/concepts/oauth-setup.md).
 
 ## Server-Specific Scope Sets
@@ -87,4 +89,5 @@ Use it only when the user explicitly wants write-capable Team Chat MCP tooling.
 ## Related Skills
 
 - [design-mcp-workflow](../design-mcp-workflow/SKILL.md)
+- [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md)
 - [choose-zoom-approach](../choose-zoom-approach/SKILL.md)

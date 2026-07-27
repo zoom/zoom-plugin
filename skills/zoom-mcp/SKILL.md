@@ -65,6 +65,14 @@ Write-capable Team Chat MCP work is covered by the optional child skill
 [team-chat/SKILL.md](team-chat/SKILL.md). This plugin does not register the Team Chat MCP
 server in `.mcp.json` by default.
 
+> **Need the OAuth app/scopes first?** Use
+> [Marketplace app management](../rest-api/references/marketplace-apps.md) to create or
+> validate the General App, select user/admin scopes for MCP tools, and understand credential
+> response shapes before minting the bearer token passed to the MCP server. Start from the
+> [default Zoom MCP template](../rest-api/assets/marketplace-apps/zoom-mcp-default.json), or
+> select the dedicated Team Chat or Whiteboard template from the
+> [Marketplace template selector](../rest-api/references/marketplace-app-templates.md).
+
 ## Quick Start
 
 **1. Use the right auth path for your Claude product**

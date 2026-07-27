@@ -26,6 +26,7 @@ Explicit slash workflows implemented as skills under `skills/`:
 | Workflow | Description |
 |---|---|
 | [`/start`](skills/start/SKILL.md) | Start with a Zoom app idea and get routed to the right product and build path |
+| [`/setup-zoom-marketplace-app`](skills/setup-zoom-marketplace-app/SKILL.md) | Select, create, or validate the app model, manifest, scopes, events, and credentials for a Zoom integration |
 | [`/setup-zoom-oauth`](skills/setup-zoom-oauth/SKILL.md) | Choose the auth model, scopes, and redirect flow for a Zoom app |
 | [`/build-zoom-meeting-app`](skills/build-zoom-meeting-app/SKILL.md) | Build an embedded or managed Zoom meeting flow |
 | [`/build-zoom-bot`](skills/build-zoom-bot/SKILL.md) | Build bots, recorders, and real-time meeting processors |
@@ -82,6 +83,12 @@ The plugin also keeps the original Zoom product-specific reference library under
 
 ```text
 /start Build a React app that lets customers schedule and join Zoom meetings from our product
+```
+
+### Setting up the Marketplace app
+
+```text
+/setup-zoom-marketplace-app Create the minimum user-managed General App manifest for a meeting API workflow with webhooks
 ```
 
 ### Debugging a broken webhook

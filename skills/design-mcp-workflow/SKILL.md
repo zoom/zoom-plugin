@@ -22,7 +22,8 @@ Use this skill when the user wants Claude or another MCP-capable client to inter
 2. Route MCP-only tasks to [zoom-mcp](../zoom-mcp/SKILL.md).
 3. Route hybrid tasks to both [zoom-mcp](../zoom-mcp/SKILL.md) and [rest-api](../rest-api/SKILL.md).
 4. If Whiteboard is central, route to [zoom-mcp/whiteboard](../zoom-mcp/whiteboard/SKILL.md).
-5. Call out transport, auth, and client capability assumptions explicitly.
+5. If the client needs manual app registration, route to [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md) and select the matching MCP template.
+6. Call out transport, auth, and client capability assumptions explicitly.
 
 ## Common Mistakes
 

@@ -30,7 +30,7 @@ If you don't have owner/admin privileges:
 
 > ⚠️ **CRITICAL**: Do NOT select "Server-to-Server OAuth"
 > 
-> **Why**: Server-to-Server OAuth apps do NOT support the Team Chat/Chatbot features. Only General App (OAuth) supports chatbots and team chat integrations.
+> **Why**: Server-to-Server OAuth apps do not support the Team Chat chatbot/subscription feature. Use a General App for chatbots. S2S can still call supported Team Chat admin REST APIs.
 
 ## Step 2: Basic Information
 

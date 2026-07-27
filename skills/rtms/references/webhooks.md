@@ -52,6 +52,12 @@ app.post('/webhook', (req, res) => {
 
 ## Events
 
+May 2026 payload additions:
+
+- `meeting.rtms_started` and `webinar.rtms_started` include `payload.account_id`, `payload.object.is_original_host`, and `payload.object.meeting_id`.
+- `webinar.rtms_started` also includes `payload.object.webinar_id`.
+- `session.rtms_started` includes `payload.account_id`.
+
 ### meeting.rtms_started
 
 Sent when RTMS stream is ready for a meeting.
@@ -65,6 +71,7 @@ Sent when RTMS stream is ready for a meeting.
       "meeting_id": "meeting_id",
       "meeting_uuid": "meeting_uuid",
       "host_id": "host_user_id",
+      "is_original_host": true,
       "rtms_stream_id": "stream_id",
       "server_urls": "wss://rtms-sjc1.zoom.us/...",
       "signature": "auth_signature"
@@ -101,8 +108,10 @@ Sent when RTMS stream is ready for a webinar.
     "account_id": "account_id",
     "object": {
       "meeting_id": "meeting_id",
+      "webinar_id": "webinar_id",
       "meeting_uuid": "meeting_uuid",
       "host_id": "host_user_id",
+      "is_original_host": true,
       "rtms_stream_id": "stream_id",
       "server_urls": "wss://rtms-sjc1.zoom.us/...",
       "signature": "auth_signature"
@@ -187,9 +196,13 @@ Subscribe to receive `SHARING_START` and `SHARING_STOP` events when participants
 
 | Field | Description |
 |-------|-------------|
+| `account_id` | Account identifier on start/stop payloads |
 | `rtms_stream_id` | Unique stream identifier |
 | `server_urls` | WebSocket signaling server URL |
 | `meeting_uuid` | Meeting unique identifier (needed for signature) |
+| `meeting_id` | Meeting number or ID included for meeting and webinar start events |
+| `webinar_id` | Webinar ID included for webinar start events |
+| `is_original_host` | Whether the operator is the original meeting/webinar host |
 | `signature` | Pre-computed auth signature (alternative to self-generating) |
 
 ## Server URL Geo-Routing
@@ -228,6 +241,23 @@ const region = hostname.split('-')[1].replace(/[0-9]/g, '');  // sjc
    - `webinar.rtms_stopped` (if using webinars)
 7. Click **Done** then **Save**
 
+Manifest API caveat: live Marketplace tests on 2026-07-08 showed current
+`POST /marketplace/apps/manifest/validate` rejecting meeting/webinar RTMS event names
+such as `meeting.rtms_started`, `meeting.rtms_stopped`, `meeting.rtms_interrupted`,
+`webinar.rtms_started`, `webinar.rtms_stopped`, `webinar.rtms_interrupted`,
+`rtms.concurrency_limited`, and `rtms.concurrency_near_limit`, even though existing
+saved RTMS apps can export manifests containing those event names. `POST /marketplace/apps`
+also rejected those event names in a create request, but `PUT /marketplace/apps/{appId}/manifest`
+against an existing draft General App returned HTTP `200` and `GET /manifest` showed the
+RTMS event names persisted. This appears to be manifest-validator/create API drift, not a
+runtime event-name change. Prefer the Marketplace UI or event-subscription API for RTMS
+event setup. If using manifest automation, create a valid baseline app first, then update
+and immediately export the manifest to confirm persistence.
+
+The same validation probe accepted Contact Center Voice RTMS event names:
+`contact_center.voice_rtms_started`, `contact_center.voice_rtms_stopped`, and
+`contact_center.voice_rtms_interrupted`.
+
 ### In Zoom Marketplace (Video SDK App)
 
 1. Go to your Video SDK app settings
@@ -261,13 +291,13 @@ const region = hostname.split('-')[1].replace(/[0-9]/g, '');  // sjc
 
 | Product | Start Event | Stop Event | Payload ID | App Type |
 |---------|-------------|------------|------------|----------|
-| **Zoom Meetings** | `meeting.rtms_started` | `meeting.rtms_stopped` | `meeting_uuid` | General App |
-| **Zoom Webinars** | `webinar.rtms_started` | `webinar.rtms_stopped` | `meeting_uuid` (not webinar_uuid!) | General App |
+| **Zoom Meetings** | `meeting.rtms_started` | `meeting.rtms_stopped` | `meeting_uuid` | User-managed General App |
+| **Zoom Webinars** | `webinar.rtms_started` | `webinar.rtms_stopped` | `meeting_uuid` (not webinar_uuid!) | User-managed General App |
 | **Zoom Video SDK** | `session.rtms_started` | `session.rtms_stopped` | `session_id` | Video SDK App |
-| Zoom Contact Center | `contactcenter.rtms_*` | `contactcenter.rtms_*` | See Zoom docs | Contact Center App |
+| Zoom Contact Center Voice | `contact_center.voice_rtms_started` | `contact_center.voice_rtms_stopped` | See Zoom docs | General user/admin or S2S, based on scopes |
 | Zoom Phone | `phone.rtms_*` | `phone.rtms_*` | See Zoom docs | General App |
 
-> **Key differences**: Meetings and webinars use a General App with OAuth credentials. Video SDK uses a Video SDK App with SDK Key/Secret. Once connected, the WebSocket protocol is identical across all products.
+> **Key differences**: Meetings and webinars require a user-managed General App. Contact Center Voice can use General or S2S according to scope and control needs. Video SDK uses a Video SDK App with SDK Key/Secret. Once connected, the WebSocket protocol is identical across all products.
 
 ## Resources
 

@@ -54,6 +54,11 @@ Video SDK gives you **full control over the UI**:
 - SDK Key and Secret
 - Web development environment
 
+> **Need to create the Video SDK app first?** Use
+> [Marketplace app management](../rest-api/references/marketplace-apps.md) for app creation,
+> manifest validation, app-type quirks, and credential response shapes before generating
+> Video SDK session JWTs.
+
 > **Need help with OAuth or signatures?** See the **[zoom-oauth](../oauth/SKILL.md)** skill for authentication flows.
 
 > **Need pre-join diagnostics on web?** Use **[probe-sdk](../probe-sdk/SKILL.md)** before Video SDK `join()` to reduce first-minute failures.

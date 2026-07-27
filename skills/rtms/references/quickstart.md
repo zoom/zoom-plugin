@@ -5,7 +5,7 @@ Get started with Zoom Realtime Media Streams.
 ## Prerequisites
 
 1. **Node.js 20.3.0+** (24 LTS recommended)
-2. Zoom General App (for meetings/webinars), Video SDK App (for Video SDK), or approved Contact Center / RTMS integration for Zoom Contact Center Voice
+2. User-managed General App (meetings/webinars), Video SDK App (Video SDK), or General/S2S app selected by scope for Contact Center Voice RTMS
 3. Webhook endpoint configured
 4. Server to handle WebSocket connections
 
