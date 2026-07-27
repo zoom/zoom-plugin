@@ -91,6 +91,18 @@ The plugin also keeps the original Zoom product-specific reference library under
 /setup-zoom-marketplace-app Create the minimum user-managed General App manifest for a meeting API workflow with webhooks
 ```
 
+For programmatic Marketplace app creation from Claude Code, register a separately hosted helper
+MCP server first. Replace the example ngrok hostname with the current trusted helper endpoint:
+
+```bash
+claude mcp add --transport http \
+  zoom-marketplace-helper \
+  https://YOUR_NGROK_HOST.ngrok-free.app/mcp
+```
+
+Then run `/setup-zoom-marketplace-app` and ask Claude Code to use `zoom-marketplace-helper`.
+The helper is external to this plugin and temporary ngrok URLs can change after a restart.
+
 ### Debugging a broken webhook
 
 ```text

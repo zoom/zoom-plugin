@@ -18,6 +18,25 @@ Set up the Zoom Marketplace app boundary before implementing OAuth, API, SDK, we
 6. Complete post-create setup that the public schema does not reliably encode, including WebSocket delivery and some webhook or RTMS event subscriptions.
 7. Store generated secrets in a secret manager, record only safe environment-variable names, and return to the owning product workflow.
 
+## Optional Claude Code Marketplace Helper
+
+To let Claude Code create or validate Marketplace apps programmatically, register a separately
+hosted Marketplace helper MCP server. This plugin does not bundle or host that helper server.
+Start the helper first, expose its `/mcp` endpoint over HTTPS, and register the current endpoint:
+
+```bash
+claude mcp add --transport http \
+  zoom-marketplace-helper \
+  https://YOUR_NGROK_HOST.ngrok-free.app/mcp
+```
+
+Replace `YOUR_NGROK_HOST` with the hostname for the running helper. A temporary ngrok URL can
+change when the tunnel restarts, so update the Claude Code server registration when that happens.
+Only register a helper endpoint that you trust because it can create or modify Marketplace apps
+and may handle app credentials. After registration, use `/setup-zoom-marketplace-app` and tell
+Claude Code to use the `zoom-marketplace-helper` MCP server for the requested Marketplace
+operation.
+
 ## Primary References
 
 - [Marketplace app management](../rest-api/references/marketplace-apps.md)
