@@ -70,6 +70,8 @@ The plugin also keeps the original Zoom product-specific reference library under
 - [`skills/translator/`](skills/translator/)
 - [`skills/zoom-mcp/`](skills/zoom-mcp/)
 - [`skills/zoom-mcp/team-chat/`](skills/zoom-mcp/team-chat/)
+- [`skills/zoom-mcp/whiteboard/`](skills/zoom-mcp/whiteboard/)
+- [`skills/zoom-mcp/references/servers.md`](skills/zoom-mcp/references/servers.md)
 
 ## Example Workflows
 
@@ -92,7 +94,7 @@ The plugin also keeps the original Zoom product-specific reference library under
 ```
 
 For programmatic Marketplace app creation from Claude Code, register a separately hosted helper
-MCP server first. Replace the example ngrok hostname with the current trusted helper endpoint:
+MCP server first. Replace the example hostname with the current trusted helper endpoint:
 
 ```bash
 claude mcp add --transport http \
@@ -101,7 +103,41 @@ claude mcp add --transport http \
 ```
 
 Then run `/setup-zoom-marketplace-app` and ask Claude Code to use `zoom-marketplace-helper`.
-The helper is external to this plugin and temporary ngrok URLs can change after a restart.
+The helper is external to this plugin. Its MCP endpoint must already be reachable by Claude Code.
+
+#### Test a new app without deploying it
+
+If you do not have an existing HTTPS server for the app yet, expose your local app with a
+temporary tunnel before creating the Marketplace app. This lets you test the OAuth redirect,
+Zoom App home URL, and webhook endpoints through the app you are running locally.
+
+Start the app locally, for example on port `3000`, then choose one tunnel:
+
+```bash
+# ngrok
+ngrok http 3000
+
+# Or Cloudflare Tunnel
+cloudflared tunnel --url http://localhost:3000
+```
+
+Use the HTTPS tunnel URL in the app configuration, with the actual routes implemented by your
+local server. For example:
+
+```text
+Home URL:              https://YOUR_TUNNEL_HOST/
+OAuth redirect URL:    https://YOUR_TUNNEL_HOST/oauth/callback
+Webhook endpoint URL:  https://YOUR_TUNNEL_HOST/webhooks/zoom
+```
+
+The tunnel only forwards requests; it does not create these routes or handle OAuth and webhook
+validation for you. Free or ephemeral tunnel URLs can change, so update the Marketplace app
+configuration and any generated manifest values whenever the tunnel hostname changes. Use a
+deployed HTTPS service or a reserved tunnel hostname when the URL must remain stable.
+
+The app tunnel and the helper MCP endpoint are separate concerns. If both are running locally,
+each service needs a publicly reachable HTTPS URL, or the helper can be deployed while only the
+app uses a local tunnel.
 
 ### Debugging a broken webhook
 
@@ -119,7 +155,11 @@ The helper is external to this plugin and temporary ngrok URLs can change after 
 
 See [CONNECTORS.md](CONNECTORS.md). The plugin works standalone from the bundled skills, and gets supercharged when Claude can use the bundled Zoom MCP servers from [`.mcp.json`](.mcp.json).
 
-The bundled MCP servers are the main Zoom MCP server, Zoom Docs MCP server, and Zoom Whiteboard MCP server. Team Chat MCP is documented as an optional child skill under [`skills/zoom-mcp/team-chat/`](skills/zoom-mcp/team-chat/), but is not registered in [`.mcp.json`](.mcp.json) by default.
+The current official Zoom MCP catalog contains the main Zoom MCP, Meetings, Canvas, Chat, Tasks,
+Revenue Accelerator, and Whiteboard servers. This plugin currently bundles the main, legacy Docs,
+and Whiteboard definitions in [`.mcp.json`](.mcp.json); the complete inventory and current
+endpoints are in [`skills/zoom-mcp/references/servers.md`](skills/zoom-mcp/references/servers.md).
+For new document workflows, prefer Zoom Canvas MCP. For new chat workflows, prefer Zoom Chat MCP.
 
 ## Cross-Platform Notes
 

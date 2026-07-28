@@ -1,12 +1,19 @@
 # Tool Reference — Zoom MCP Servers
 
-Tools available on the bundled Zoom MCP servers. Treat the raw server tool names as authoritative.
+Tools available on Zoom's MCP servers. Treat the raw server tool names as authoritative.
 Some MCP clients namespace them in the UI, for example `zoom-mcp:recordings_list` or
-`zoom-docs-mcp:create_file_with_content`.
+`zoom-canvas-mcp:create_file_with_content`.
 
-This reference is based on the current documented and observed tool surfaces of:
+The current server inventory and complete tool-to-scope mapping is in
+[servers.md](servers.md). This reference covers the main workflows and is based on the current
+documented tool surfaces of:
 - `https://mcp.zoom.us/mcp/zoom/streamable`
-- `https://mcp.zoom.us/mcp/docs/streamable`
+- `https://mcp.zoom.us/mcp/meeting/streamable`
+- `https://mcp.zoom.us/mcp/canvas/streamable`
+- `https://mcp.zoom.us/mcp/chat/streamable`
+- `https://mcp.zoom.us/mcp/tasks/streamable`
+- `https://mcp.zoom.us/mcp/revenue_accelerator/streamable`
+- `https://mcp.zoom.us/mcp/whiteboard/streamable`
 
 Treat the live MCP protocol `tools/list` response as the authoritative source for the current
 tool list and schemas.
@@ -22,6 +29,8 @@ The main Zoom MCP server exposes these tools:
 - `get_recording_resource`
 - `get_file_content`
 - `recordings_list`
+- `hub_create_file_from_content`
+- `hub_get_file_content`
 
 The server did **not** expose older inferred tool names such as `list_meetings`,
 `get_meeting`, `create_meeting`, `get_user_profile`, `list_available_tools`, or
@@ -37,17 +46,23 @@ Protected-resource metadata for the main Zoom MCP server advertised these scope 
 - `cloud_recording:read:list_user_recordings`
 - `docs:write:import`
 - `docs:read:export`
+- `hub:write:content`
+- `hub:read:content`
 
-## Zoom Docs MCP Server Tools
+## Zoom Canvas MCP and Docs Tools
 
-The dedicated Zoom Docs MCP server exposes these documented tools:
+The current Zoom Canvas MCP server exposes Canvas tools plus these Docs-compatible tools:
 
 - `create_file_with_content`
 - `get_file_content`
 
-The main Zoom MCP server also exposes Docs-capable tools, but the names differ:
+The main Zoom MCP server also exposes Docs and Hub-capable tools:
 - main `zoom-mcp`: `create_new_file_with_markdown`, `get_file_content`
-- dedicated `zoom-docs-mcp`: `create_file_with_content`, `get_file_content`
+- main `zoom-mcp`: `hub_create_file_from_content`, `hub_get_file_content`
+- current `zoom-canvas-mcp`: `create_file_with_content`, `get_file_content`
+
+The old `zoom-docs-mcp` endpoint at `/mcp/docs/streamable` is retained only for compatibility and
+is not part of the current official server catalog.
 
 ### `create_file_with_content`
 
@@ -81,9 +96,16 @@ Create a Zoom Docs document from Markdown content through the main Zoom MCP serv
 
 **Verified scope:** `docs:write:import`
 
-Use the live tool schema from `tools/list` for exact parameter names. This tool is equivalent
-in purpose to `create_file_with_content` on the dedicated Zoom Docs MCP server, but the main
-server exposes it under a different name.
+Use the live tool schema from `tools/list` for exact parameter names. This tool is the main Zoom
+MCP equivalent of `create_file_with_content` on the current Canvas MCP server.
+
+### `hub_create_file_from_content` and `hub_get_file_content`
+
+The main Zoom MCP server exposes Hub file operations with separate `hub:*` scopes. Use the live
+schema for exact `file_type`, `content`, and format parameters:
+
+- `hub_create_file_from_content` → `hub:write:content`
+- `hub_get_file_content` → `hub:read:content`
 
 ## Meeting Discovery and Assets
 
@@ -168,9 +190,24 @@ summary-like, and playback-oriented resources.
 - next steps
 - play URLs
 
+## Current Product-Specific Surfaces
+
+For the complete tool list and exact scope mapping, use [servers.md](servers.md). The current
+product-specific surfaces are:
+
+| Server | Endpoint | Primary capability |
+|---|---|---|
+| Meetings | `https://mcp.zoom.us/mcp/meeting/streamable` | Meeting search, assets, and recordings |
+| Canvas | `https://mcp.zoom.us/mcp/canvas/streamable` | Docs/Canvas files, blocks, collaborators, and access |
+| Chat | `https://mcp.zoom.us/mcp/chat/streamable` | Chat messages, channels, contacts, files, and sessions |
+| Tasks | `https://mcp.zoom.us/mcp/tasks/streamable` | Tasks, steps, comments, assignees, and collaborators |
+| Revenue Accelerator | `https://mcp.zoom.us/mcp/revenue_accelerator/streamable` | Conversations, deals, analysis, scorecards, CRM, and teams |
+| Whiteboard | `https://mcp.zoom.us/mcp/whiteboard/streamable` | Whiteboards and collaborators |
+
 ## Discovery Notes
 
 - Discovery happens through MCP protocol `tools/list`, not through a dedicated Zoom utility tool.
 - Re-run `tools/list` whenever you need to confirm whether the current tool list has changed.
 - Do not rely on older examples that use `query`, `startDate`, `endDate`, or `pageSize`; the current live schema uses `q`, `from`, `to`, and `page_size`.
-- Zoom Docs work may be available through both the main `zoom-mcp` server and the dedicated `zoom-docs-mcp` server. Check `tools/list` on the active server and use the exact exposed tool name.
+- Docs work is available through the main `zoom-mcp` server and the current Canvas MCP server.
+  Check `tools/list` on the active server and use the exact exposed tool name.

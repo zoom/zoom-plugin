@@ -1,6 +1,6 @@
 ---
 name: zoom-mcp
-description: Guidance for the bundled Zoom MCP connectors. Use after routing to an MCP workflow when planning or troubleshooting tool-based access to meetings, recordings, meeting assets, transcripts, Zoom-wide search, or Zoom Docs. Route Whiteboard-specific requests to `zoom-mcp/whiteboard` and write-capable Team Chat MCP requests to `zoom-mcp/team-chat`.
+description: Guidance for Zoom's MCP server catalog. Use after routing to an MCP workflow when planning or troubleshooting tool-based access to Meetings, Canvas, Chat, Tasks, Revenue Accelerator, Whiteboard, recordings, meeting assets, transcripts, Zoom-wide search, or Docs. Use the current server catalog for endpoints and scopes.
 user-invocable: false
 triggers:
   - "zoom mcp"
@@ -16,7 +16,11 @@ triggers:
   - "zoom recording resource mcp"
   - "zoom docs via mcp"
   - "zoom docs content via mcp"
+  - "zoom canvas mcp"
+  - "zoom meetings mcp"
   - "zoom chat search mcp"
+  - "zoom tasks mcp"
+  - "zoom revenue accelerator mcp"
   - "team chat mcp"
   - "zoom team chat mcp"
   - "zoom transcript via mcp"
@@ -29,48 +33,51 @@ Guidance for the bundled Zoom MCP connector in this Claude plugin. Prefer `desig
 
 # Zoom MCP Server
 
-This plugin bundles Zoom's hosted MCP server at `mcp.zoom.us` for AI-agent access to:
+Zoom's current hosted MCP catalog uses `mcp.zoom.us` for AI-agent access to:
 
 - semantic meeting search
 - cross-Zoom search over Team Chat messages, Zoom Docs, and My Notes
 - meeting-linked asset retrieval
 - recording resource retrieval
-- Zoom Docs creation from Markdown and Markdown content export
+- Zoom Docs and Hub content creation and retrieval
+- Canvas, Chat, Tasks, Revenue Accelerator, and Whiteboard product workflows
 
-Zoom Docs are also exposed through a separate bundled server:
-
-- `zoom-docs-mcp` at `mcp.zoom.us`
-- purpose-built for Zoom Docs creation and retrieval
+The complete current server and scope inventory is in
+[references/servers.md](references/servers.md). The dedicated `/mcp/docs` path and the former
+`/mcp/team_chat` path are retained only as legacy compatibility references; use Canvas and Chat
+for new integrations.
 
 Current tool names from the main Zoom MCP server, verified by `tools/list`:
 
 - `create_new_file_with_markdown`
 - `get_file_content`
 - `get_meeting_assets`
+- `get_recording_resource`
+- `hub_create_file_from_content`
+- `hub_get_file_content`
+- `recordings_list`
 - `search_meetings`
 - `search_zoom`
-- `get_recording_resource`
-- `recordings_list`
 
 Some MCP clients namespace server tools in the UI, for example `zoom-mcp:recordings_list`.
 Treat the raw tool names above as authoritative.
 
-Zoom Docs-specific MCP work can use either the main `zoom-mcp` server or the dedicated
-`zoom-docs-mcp` server; use the exact tool names exposed by the active server.
+Docs-specific MCP work can use the main `zoom-mcp` server or the current Zoom Canvas MCP server;
+use the exact tool names exposed by the active server.
 
 Whiteboard-specific MCP work is covered by the dedicated skill
 [whiteboard/SKILL.md](whiteboard/SKILL.md).
 
-Write-capable Team Chat MCP work is covered by the optional child skill
-[team-chat/SKILL.md](team-chat/SKILL.md). This plugin does not register the Team Chat MCP
-server in `.mcp.json` by default.
+Product-specific Chat MCP work is covered by the child skill
+[team-chat/SKILL.md](team-chat/SKILL.md). The folder name is retained for compatibility with
+existing links; the current official server is Zoom Chat at `/mcp/chat/streamable`.
 
 > **Need the OAuth app/scopes first?** Use
 > [Marketplace app management](../rest-api/references/marketplace-apps.md) to create or
 > validate the General App, select user/admin scopes for MCP tools, and understand credential
 > response shapes before minting the bearer token passed to the MCP server. Start from the
 > [default Zoom MCP template](../rest-api/assets/marketplace-apps/marketplace-manifest-template-for-mcp-default.json), or
-> select the dedicated Team Chat or Whiteboard template from the
+> select the matching Meetings, Canvas, Chat, Tasks, Revenue Accelerator, or Whiteboard template from the
 > [Marketplace template selector](../rest-api/references/marketplace-app-templates.md). Automated
 > selection must inspect the
 > [template index](../rest-api/assets/marketplace-apps/marketplace-manifest-template-index.json)
@@ -93,9 +100,10 @@ export ZOOM_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 **3. Enable or restart the plugin so Claude restarts the bundled MCP server definition.**
 
 **4. Verify discovery:**
-- Confirm the client can see 7 default Zoom MCP tools: `search_meetings`,
+- Confirm the client can see 9 default Zoom MCP tools: `search_meetings`,
   `create_new_file_with_markdown`, `search_zoom`, `get_meeting_assets`,
-  `get_recording_resource`, `get_file_content`, and `recordings_list`.
+  `get_recording_resource`, `get_file_content`, `recordings_list`,
+  `hub_create_file_from_content`, and `hub_get_file_content`.
 - If the client exposes raw protocol inspection, `tools/list` is the authoritative discovery source.
 - The current catalog is documented in [references/tools.md](references/tools.md).
 
@@ -121,7 +129,7 @@ tool use in this plugin. Do not rely on Server-to-Server OAuth as a supported MC
 
 The Zoom MCP scope set is not the same as the older broad REST scopes.
 The key scopes for the main Zoom MCP server at `https://mcp.zoom.us/mcp/zoom/streamable`,
-accurate as of 10 Apr 2026, are:
+accurate as of 28 Jul 2026, are:
 - `ai_companion:read:search` — Search across Zoom Meeting, Zoom Chat, and Zoom Doc, returning the most relevant results based on the query
 - `meeting:read:search` — Search and view meetings
 - `meeting:read:assets` — View a meeting's assets
@@ -129,12 +137,11 @@ accurate as of 10 Apr 2026, are:
 - `cloud_recording:read:content` — read recording content scope
 - `docs:write:import` — Create a new file by import
 - `docs:read:export` — Read file content in Markdown format
+- `hub:write:content` — Create Hub files from content
+- `hub:read:content` — Read Hub file content
 
-For Zoom Docs MCP specifically, the official docs page shows these granular scopes for the documented tools:
-- `docs:write:import` — Create a new file by import
-- `docs:read:export` — Read file content in Markdown format
-
-Other Zoom MCP servers use different scope sets. Use the published Zoom MCP server docs as the source of truth for those surfaces.
+Other Zoom MCP servers use different scope sets. Use [references/servers.md](references/servers.md)
+and the published Zoom MCP server pages as the source of truth for those surfaces.
 
 **3. AI Companion features are feature prerequisites, not scope substitutes**
 
@@ -147,11 +154,11 @@ settings do not replace the required OAuth scopes.
 The Zoom MCP endpoint and the Whiteboard MCP endpoint are separate. Route Whiteboard-specific
 requests to [whiteboard/SKILL.md](whiteboard/SKILL.md).
 
-**5. Team Chat write tools are a separate MCP surface**
+**5. Zoom Chat tools are a separate MCP surface**
 
-The default Zoom MCP server includes read-only `search_zoom` for Team Chat and Docs search.
-The Team Chat MCP server is separate and exposes write/update tools for messages, contacts,
-channels, and channel members. Route write-capable Team Chat MCP requests to
+The default Zoom MCP server includes read-only `search_zoom` for Chat and Docs search.
+The Zoom Chat MCP server is separate and exposes read/write tools for messages, contacts,
+channels, files, and sessions. Route Chat MCP requests to
 [team-chat/SKILL.md](team-chat/SKILL.md).
 
 **6. Use REST for deterministic meeting CRUD**
@@ -167,18 +174,9 @@ route to [../rest-api/SKILL.md](../rest-api/SKILL.md).
 | Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/zoom/streamable` |
 | SSE (fallback) | `https://mcp.zoom.us/mcp/zoom/sse` |
 
-Dedicated Docs MCP server:
-
-| Transport | URL |
-|-----------|-----|
-| Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/docs/streamable` |
-| SSE (fallback) | `https://mcp.zoom.us/mcp/docs/sse` |
-
-Dedicated Whiteboard MCP skill:
-- [whiteboard/SKILL.md](whiteboard/SKILL.md)
-
-Optional Team Chat MCP skill:
-- [team-chat/SKILL.md](team-chat/SKILL.md)
+All current product-specific endpoints are listed in [references/servers.md](references/servers.md).
+The current official product paths include `/meeting`, `/canvas`, `/chat`, `/tasks`,
+`/revenue_accelerator`, and `/whiteboard`.
 
 ## Search and Retrieval Model
 
@@ -208,6 +206,8 @@ when the user asks to inspect the Markdown content of a returned Zoom Doc or My 
 | `search_zoom` | `search_entities`*, `query`, `page_size` | `ai_companion:read:search` |
 | `get_recording_resource` | `meetingId`*, `types`, `clip_num`, `play_time`, `raw_passcode`, `encode_passcode` | `cloud_recording:read:content` |
 | `recordings_list` | `userId`*, `from`, `to`, `meeting_id`, `trash`, `trash_type`, `page_size`, `next_page_token` | `cloud_recording:read:list_user_recordings` |
+| `hub_create_file_from_content` | `content`*, `file_type`* | `hub:write:content` |
+| `hub_get_file_content` | `file_id`*, `format`* | `hub:read:content` |
 
 \* Required parameter
 
@@ -255,9 +255,12 @@ search_zoom
 → get_file_content  fileId: "FILE_ID"
 ```
 
-**Use the dedicated Zoom Docs server when selected:**
+**Use Zoom Canvas MCP for current Docs and Canvas workflows:**
 - `create_file_with_content`
 - `get_file_content`
+- `canvas_insert_block`
+- `canvas_update_block`
+- `canvas_replace_range_of_blocks`
 
 ## Error Reference
 
@@ -285,9 +288,10 @@ Full error reference: [references/error-codes.md](references/error-codes.md)
 
 ### References
 - [references/tools.md](references/tools.md) — Current Zoom MCP tool reference
+- [references/servers.md](references/servers.md) — Current Zoom MCP server catalog, endpoints, and scope mappings
 - [references/error-codes.md](references/error-codes.md) — MCP and Zoom API errors with fixes
 - [whiteboard/SKILL.md](whiteboard/SKILL.md) — Dedicated Whiteboard MCP skill
-- [team-chat/SKILL.md](team-chat/SKILL.md) — Optional Team Chat MCP child skill
+- [team-chat/SKILL.md](team-chat/SKILL.md) — Zoom Chat MCP child skill; folder retained for compatibility
 
 ### Troubleshooting
 - [troubleshooting/common-errors.md](troubleshooting/common-errors.md) — Scope failures, endpoint mixups, search/recording issues

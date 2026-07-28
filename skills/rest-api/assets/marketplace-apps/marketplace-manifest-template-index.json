@@ -191,15 +191,15 @@
       "unsupported_app_types": ["s2s_oauth", "meeting_sdk"]
     },
     {
-      "id": "mcp-docs",
-      "file": "marketplace-manifest-template-for-mcp-docs.json",
+      "id": "mcp-canvas",
+      "file": "marketplace-manifest-template-for-mcp-canvas.json",
       "kind": "manifest",
       "app_type": "general",
       "usage": "USER_OPERATION",
       "scope_mode": "user",
       "supports_manifest_update": true,
       "requires_pkce": true,
-      "required_settings": ["docs import/export scopes", "MCP client redirect URI"],
+      "required_settings": ["exact Canvas/Docs tool scopes", "MCP client redirect URI"],
       "unsupported_app_types": ["s2s_oauth", "meeting_sdk"]
     },
     {
@@ -223,7 +223,7 @@
       "scope_mode": "user",
       "supports_manifest_update": true,
       "requires_pkce": true,
-      "required_settings": ["Team Chat/channel read/write scopes", "MCP client redirect URI"],
+      "required_settings": ["Chat/channel read/write scopes", "MCP client redirect URI"],
       "unsupported_app_types": ["s2s_oauth", "meeting_sdk"]
     },
     {

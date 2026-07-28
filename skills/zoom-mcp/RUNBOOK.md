@@ -13,13 +13,14 @@ echo "${ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN:+set}"
 If empty, export the relevant token using [concepts/oauth-setup.md](concepts/oauth-setup.md).
 
 **2. Tool discovery working?**
-- Confirm the client can see 7 default Zoom MCP tools: `search_meetings`,
+- Confirm the client can see 9 default Zoom MCP tools: `search_meetings`,
   `create_new_file_with_markdown`, `search_zoom`, `get_meeting_assets`,
-  `get_recording_resource`, `get_file_content`, and `recordings_list`.
-- For the dedicated Zoom Docs server, confirm the client can see `create_file_with_content`
-  and `get_file_content`.
-- Team Chat MCP is documented in [team-chat/SKILL.md](team-chat/SKILL.md), but it is not
-  registered in this plugin's `.mcp.json` by default.
+  `get_recording_resource`, `get_file_content`, `recordings_list`,
+  `hub_create_file_from_content`, and `hub_get_file_content`.
+- For product-specific servers, compare the visible tools with
+  [references/servers.md](references/servers.md).
+- The current catalog includes Meetings, Canvas, Chat, Tasks, Revenue Accelerator, and
+  Whiteboard MCP surfaces in addition to the default Zoom MCP server.
 - If your client exposes raw protocol inspection, verify `tools/list` succeeds.
 - Compare the visible tools with [references/tools.md](references/tools.md).
 
@@ -33,13 +34,11 @@ Minimum Zoom MCP scopes for this guide:
 - `cloud_recording:read:content` — read recording content scope
 - `docs:write:import` — Create Zoom Docs from Markdown through the main Zoom MCP server
 - `docs:read:export` — Read Zoom Docs or My Notes Markdown content
+- `hub:write:content` — Create Hub files from content
+- `hub:read:content` — Read Hub file content
 
-Minimum Zoom Docs MCP scopes:
-- `docs:write:import` — Create new file by import
-- `docs:read:export` — Read file content in Markdown format
-
-Whiteboard uses a separate scope set. See [whiteboard/SKILL.md](whiteboard/SKILL.md).
-Team Chat write/update tools use a separate scope set. See [team-chat/SKILL.md](team-chat/SKILL.md).
+Canvas, Chat, Tasks, Revenue Accelerator, and Whiteboard use separate scope sets. See
+[references/servers.md](references/servers.md) and the child guidance where applicable.
 
 **4. AI Companion features enabled?**
 
@@ -58,9 +57,10 @@ meeting assets, or transcript-rich recording content to be useful.
 | `-32001 Invalid access token, does not contain scopes:[cloud_recording:read:list_user_recordings,...]` | Missing recordings-list scope | Add `cloud_recording:read:list_user_recordings` |
 | `-32001 Invalid access token, does not contain scopes:[cloud_recording:read:content]` | Missing recording-content scope | Add `cloud_recording:read:content` |
 | `-32001 Invalid access token, does not contain scopes:[docs:read:export]` | Missing Docs export scope | Add `docs:read:export` and mint a new user token |
+| `-32001 Invalid access token, does not contain scopes:[hub:read:content]` | Missing Hub content-read scope | Add `hub:read:content` and mint a new user token |
 | `-32602 Can not found tool: ... in this MCP Server` | Wrong endpoint surface or wrong tool name | Re-run `tools/list` and use the current tool names for the active MCP server |
 | `-32603 Call handle error` | Missing required parameters or server-side call handling failure | Re-check required arguments against the live schema and retry |
-| `Upstream API returned error status code: 400 ... invalid param` | Invalid parameter value passed through to the underlying Zoom API | Fix the specific argument value, such as `parent_id` for Docs creation on the dedicated Docs server |
+| `Upstream API returned error status code: 400 ... invalid param` | Invalid parameter value passed through to the underlying Zoom API | Fix the specific argument value, such as `parent_id` for Docs creation on the Canvas MCP server |
 | Search returns no useful meeting content | AI Companion features missing or data not indexed | Enable Smart Recording + Meeting Summary, widen the search window, or fall back to `recordings_list` |
 
 ## Auth Reality Check

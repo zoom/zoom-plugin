@@ -7,33 +7,22 @@ sources. Zoom exposes hosted MCP surfaces that clients can discover and call ove
 
 ## Hosted Zoom MCP Surfaces
 
-### Zoom MCP
+Zoom currently publishes seven product-specific MCP servers. The canonical endpoint and tool
+inventory is in [references/servers.md](../references/servers.md).
 
-| Transport | URL |
-|-----------|-----|
-| Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/zoom/streamable` |
-| SSE (fallback) | `https://mcp.zoom.us/mcp/zoom/sse` |
+| Server | Streamable HTTP endpoint |
+|---|---|
+| Zoom MCP | `https://mcp.zoom.us/mcp/zoom/streamable` |
+| Zoom Meetings MCP | `https://mcp.zoom.us/mcp/meeting/streamable` |
+| Zoom Canvas MCP | `https://mcp.zoom.us/mcp/canvas/streamable` |
+| Zoom Chat MCP | `https://mcp.zoom.us/mcp/chat/streamable` |
+| Zoom Tasks MCP | `https://mcp.zoom.us/mcp/tasks/streamable` |
+| Zoom Revenue Accelerator MCP | `https://mcp.zoom.us/mcp/revenue_accelerator/streamable` |
+| Zoom Whiteboard MCP | `https://mcp.zoom.us/mcp/whiteboard/streamable` |
 
-### Whiteboard MCP
-
-| Transport | URL |
-|-----------|-----|
-| Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/whiteboard/streamable` |
-| SSE (fallback) | `https://mcp.zoom.us/mcp/whiteboard/sse` |
-
-Whiteboard MCP is covered by the dedicated skill
-[../whiteboard/SKILL.md](../whiteboard/SKILL.md).
-
-### Team Chat MCP
-
-| Transport | URL |
-|-----------|-----|
-| Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/team_chat/streamable` |
-| SSE (fallback) | `https://mcp.zoom.us/mcp/team_chat/sse` |
-
-Team Chat MCP is documented by the optional child skill
-[../team-chat/SKILL.md](../team-chat/SKILL.md), but it is not registered in this plugin's
-`.mcp.json` by default.
+The former `/mcp/docs` and `/mcp/team_chat` paths are compatibility paths and should not be
+selected for new integrations. The folder [../team-chat/SKILL.md](../team-chat/SKILL.md) remains
+the compatibility location for current Zoom Chat MCP guidance.
 
 ## Discovery Model
 
@@ -47,12 +36,13 @@ Use the MCP protocol `tools/list` response as the current source of truth for:
 
 ## Current Capability Shape
 
-The current Zoom MCP surface is centered on:
+The current Zoom MCP catalog covers:
 - semantic meeting search
 - cross-Zoom search over meetings, Team Chat, Zoom Docs, and My Notes
 - meeting asset retrieval
 - recording resource retrieval
-- Zoom Docs creation from Markdown
+- Zoom Docs and Hub content creation and retrieval
+- Canvas, Chat, Tasks, Revenue Accelerator, and Whiteboard operations
 
 If the task requires deterministic meeting CRUD, use the REST API skill instead of assuming
 those operations exist on the current Zoom MCP surface.
@@ -73,13 +63,39 @@ Zoom MCP protected-resource metadata currently exposes:
 - `cloud_recording:read:list_user_recordings`
 - `docs:write:import`
 - `docs:read:export`
+- `hub:write:content`
+- `hub:read:content`
 
-Whiteboard MCP protected-resource metadata currently exposes:
+Canvas MCP tools use granular Docs scopes such as:
+- `docs:read:export`
+- `docs:write:import`
+- `docs:read:file`
+- `docs:write:content`
+- `docs:update:content`
+- `docs:delete:content`
+
+Chat MCP tools use granular Chat scopes such as:
+- `team_chat:read:list_user_messages`
+- `team_chat:write:user_message`
+- `team_chat:update:user_message`
+- `team_chat:read:list_user_channels`
+- `team_chat:write:user_channel`
+
+Tasks MCP tools use granular Tasks scopes such as:
+- `tasks:read:list_tasks`
+- `tasks:read:task`
+- `tasks:write:task`
+- `tasks:update:task`
+- `tasks:delete:trash_task`
+
+Revenue Accelerator MCP tools use `zra:read:*` granular scopes.
+
+Whiteboard MCP tools use current user-level scopes:
 - `whiteboard:write:whiteboard`
 - `whiteboard:read:list_whiteboards`
 - `whiteboard:read:whiteboard`
 
-Team Chat MCP protected-resource metadata currently exposes:
+Zoom Chat MCP tools currently require scopes such as:
 - `team_chat:write:user_message`
 - `team_chat:update:user_message`
 - `team_chat:write:contact_information`

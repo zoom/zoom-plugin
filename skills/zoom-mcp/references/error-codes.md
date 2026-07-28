@@ -22,7 +22,7 @@ behind a tool call.
 | `recordings_list` | `cloud_recording:read:list_user_recordings` or admin/master variants |
 | `get_recording_resource` | `cloud_recording:read:content` |
 | `create_new_file_with_markdown` | `docs:write:import` |
-| `create_file_with_content` | `docs:write:import` worked with user OAuth; S2S runtime error surfaced `docs_import:write` aliasing |
+| `hub_create_file_from_content` | `hub:write:content` |
 | `get_file_content` | `docs:read:export` |
 
 ## Recording and Transcript Failures
@@ -46,19 +46,21 @@ Common downstream validation response:
 | `create_new_file_with_markdown` | `Upstream API returned error status code: 400 ... "message":"invalid param"` | Invalid parameter value such as a bogus `parent_id` | Fix the argument value and retry |
 | `create_file_with_content` | `Upstream API returned error status code: 400 ... "message":"invalid param"` | Invalid parameter value such as a bogus `parent_id` | Fix the argument value and retry |
 
-## Whiteboard Server Split
+## Product-Specific Server Split
 
-The Zoom MCP server (`mcp.zoom.us/mcp/zoom/streamable`), the Zoom Docs MCP server
-(`mcp.zoom.us/mcp/docs/streamable`), and the Whiteboard MCP server
+The current Zoom MCP server (`mcp.zoom.us/mcp/zoom/streamable`), Meetings MCP
+(`mcp.zoom.us/mcp/meeting/streamable`), Canvas MCP (`mcp.zoom.us/mcp/canvas/streamable`),
+Chat MCP (`mcp.zoom.us/mcp/chat/streamable`), Tasks MCP (`mcp.zoom.us/mcp/tasks/streamable`),
+Revenue Accelerator MCP (`mcp.zoom.us/mcp/revenue_accelerator/streamable`), and Whiteboard MCP
 (`mcp.zoom.us/mcp/whiteboard/streamable`) are separate surfaces.
 
-Team Chat MCP (`mcp.zoom.us/mcp/team_chat/streamable`) is also separate and is documented as
-an optional child skill.
+The old `/mcp/docs` and `/mcp/team_chat` paths are compatibility paths, not current catalog
+entries. The Chat child skill remains under the `team-chat` folder for link compatibility.
 
 Use the dedicated Whiteboard MCP skill for Whiteboard-specific auth, scopes, and identifier mapping:
 - [../whiteboard/SKILL.md](../whiteboard/SKILL.md)
 
-Use the Team Chat MCP child skill for write-capable Team Chat MCP auth, scopes, and safety rules:
+Use the Chat MCP child skill for Chat MCP auth, scopes, and safety rules:
 - [../team-chat/SKILL.md](../team-chat/SKILL.md)
 
 ## Debugging Checklist

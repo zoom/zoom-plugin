@@ -1,13 +1,13 @@
 {
   "app_type": "general",
-  "app_name": "Team Chat MCP Connector",
+  "app_name": "Zoom Chat MCP Connector",
   "contact_name": "Example Developer",
   "contact_email": "developer@example.com",
   "company_name": "Example Company",
   "manifest": {
     "display_information": {
-      "display_name": "Team Chat MCP Connector",
-      "description": "Authorizes an MCP client to send and edit messages and manage Team Chat channels."
+      "display_name": "Zoom Chat MCP Connector",
+      "description": "Authorizes an MCP client to read and manage Zoom Chat messages, channels, contacts, files, and sessions."
     },
     "oauth_information": {
       "usage": "USER_OPERATION",
@@ -74,17 +74,9 @@
         {
           "scope": "team_chat:read:list_user_sessions",
           "optional": false
-        },
-        {
-          "scope": "chat_channel:read",
-          "optional": false
-        },
-        {
-          "scope": "chat_channel:write",
-          "optional": false
         }
       ],
-      "scope_description": "Use the current Team Chat MCP read and write tools for the authorizing user.",
+      "scope_description": "Use the current Zoom Chat MCP read and write tools for the authorizing user.",
       "enable_private_pkce_client": true,
       "enable_public_pkce_client": false
     },

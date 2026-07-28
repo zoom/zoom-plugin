@@ -1,24 +1,23 @@
 # Authentication and Identifiers — Whiteboard MCP
 
-Guidance for `https://mcp.zoom.us/mcp/whiteboard/streamable` and
-`https://mcp.zoom.us/mcp/whiteboard/sse`.
+Guidance for `https://mcp.zoom.us/mcp/whiteboard/streamable`.
 
 ## Authentication Behavior
 
 Use user-level OAuth for Whiteboard MCP and request the scopes required by the specific tools you need.
 
 Tool-to-scope mapping:
-- `add_a_whiteboard_collaborator` → `whiteboard:write:collaborator:admin`
+- `add_a_whiteboard_collaborator` → `whiteboard:write:collaborator`
 - `create_a_whiteboard` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_by_script` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_for_brainstorming` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_for_meeting_summary` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_for_strategy_analysis` → `whiteboard:write:whiteboard`
-- `delete_a_whiteboard_collaborator` → `whiteboard:delete:collaborator:admin`
-- `get_a_whiteboard` → `whiteboard:read:whiteboard:admin`
-- `get_a_whiteboard_collaborator` → `whiteboard:read:list_collaborators:admin`
-- `list_whiteboards` → `whiteboard:read:list_whiteboards:admin`
-- `update_a_whiteboard_collaborator` → `whiteboard:update:collaborator:admin`
+- `delete_a_whiteboard_collaborator` → `whiteboard:delete:collaborator`
+- `get_a_whiteboard` → `whiteboard:read:whiteboard`
+- `get_a_whiteboard_collaborator` → `whiteboard:read:list_collaborators`
+- `list_whiteboards` → `whiteboard:read:list_whiteboards`
+- `update_a_whiteboard_collaborator` → `whiteboard:update:collaborator`
 
 ## Whiteboard ID Mapping
 

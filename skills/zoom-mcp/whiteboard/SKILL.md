@@ -1,8 +1,8 @@
 ---
 name: zoom-mcp/whiteboard
 description: |
-  Guidance for the bundled Zoom Whiteboard MCP connector. Use for Whiteboard MCP auth,
-  endpoints, ID mapping, and tool workflows such as list_whiteboards and get_a_whiteboard.
+  Guidance for Zoom Whiteboard MCP. Use for Whiteboard MCP auth, endpoints, ID mapping,
+  current user-level scopes, and tool workflows such as list_whiteboards and get_a_whiteboard.
   Prefer this skill when the request is specifically about Whiteboard MCP rather than general Zoom MCP.
 user-invocable: false
 triggers:
@@ -25,7 +25,6 @@ Dedicated guidance for Zoom's Whiteboard MCP server.
 | Transport | URL |
 |-----------|-----|
 | Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/whiteboard/streamable` |
-| SSE (fallback) | `https://mcp.zoom.us/mcp/whiteboard/sse` |
 
 ## Authentication
 
@@ -39,17 +38,17 @@ Reference: [references/authentication-and-identifiers.md](references/authenticat
 ## Required Scopes
 
 Whiteboard MCP tool scopes:
-- `add_a_whiteboard_collaborator` → `whiteboard:write:collaborator:admin`
+- `add_a_whiteboard_collaborator` → `whiteboard:write:collaborator`
 - `create_a_whiteboard` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_by_script` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_for_brainstorming` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_for_meeting_summary` → `whiteboard:write:whiteboard`
 - `create_a_whiteboard_for_strategy_analysis` → `whiteboard:write:whiteboard`
-- `delete_a_whiteboard_collaborator` → `whiteboard:delete:collaborator:admin`
-- `get_a_whiteboard` → `whiteboard:read:whiteboard:admin`
-- `get_a_whiteboard_collaborator` → `whiteboard:read:list_collaborators:admin`
-- `list_whiteboards` → `whiteboard:read:list_whiteboards:admin`
-- `update_a_whiteboard_collaborator` → `whiteboard:update:collaborator:admin`
+- `delete_a_whiteboard_collaborator` → `whiteboard:delete:collaborator`
+- `get_a_whiteboard` → `whiteboard:read:whiteboard`
+- `get_a_whiteboard_collaborator` → `whiteboard:read:list_collaborators`
+- `list_whiteboards` → `whiteboard:read:list_whiteboards`
+- `update_a_whiteboard_collaborator` → `whiteboard:update:collaborator`
 
 ## Whiteboard ID Mapping
 

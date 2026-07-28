@@ -20,7 +20,7 @@ Plan a Zoom MCP workflow and decide when to use MCP alone versus a hybrid REST A
 
 1. Determine whether the goal is deterministic automation, AI tool orchestration, or a hybrid.
 2. Identify whether the client uses Claude's published connector or requires a manually registered General App.
-3. For manual registration, select the default, Team Chat, or Whiteboard MCP template through [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md).
+3. For manual registration, select the default, Meetings, Canvas, Chat, Tasks, Revenue Accelerator, or Whiteboard MCP template through [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md).
 4. If MCP is appropriate, identify the likely Zoom MCP surface and transport assumptions.
 5. If MCP alone is not enough, define the REST API responsibilities separately.
 6. Call out auth, scope, and client capability constraints, especially the difference between Claude Cowork and Claude Code auth paths.
@@ -40,51 +40,24 @@ Plan a Zoom MCP workflow and decide when to use MCP alone versus a hybrid REST A
 - **Claude Code**: for manual OAuth, start from the matching Marketplace MCP template, complete user-level OAuth, export `ZOOM_MCP_ACCESS_TOKEN`, reconnect the plugin, then continue with this skill.
 - Scope requirements differ by MCP server. Use the server-specific scope sets below and the detailed tables in [../zoom-mcp/concepts/oauth-setup.md](../zoom-mcp/concepts/oauth-setup.md).
 
-## Server-Specific Scope Sets
+## Current Zoom MCP Servers
 
-Main Zoom MCP server: `https://mcp.zoom.us/mcp/zoom/streamable`
+Use [the current server catalog](../zoom-mcp/references/servers.md) for the complete tool-to-scope
+mapping. The production endpoints and scope families below were verified on 28 Jul 2026.
 
-Required scopes, accurate as of 10 Apr 2026:
-- `ai_companion:read:search`
-- `meeting:read:search`
-- `meeting:read:assets`
-- `cloud_recording:read:list_user_recordings`
-- `cloud_recording:read:content`
-- `docs:write:import`
-- `docs:read:export`
+| Server | Endpoint | Scope set |
+|---|---|---|
+| Zoom MCP | `https://mcp.zoom.us/mcp/zoom/streamable` | `meeting:read:search`, `meeting:read:assets`, `ai_companion:read:search`, `cloud_recording:read:list_user_recordings`, `cloud_recording:read:content`, `docs:write:import`, `docs:read:export`, `hub:write:content`, `hub:read:content` |
+| Zoom Meetings MCP | `https://mcp.zoom.us/mcp/meeting/streamable` | `meeting:read:search`, `meeting:read:assets`, `cloud_recording:read:list_user_recordings`, `cloud_recording:read:content` |
+| Zoom Canvas MCP | `https://mcp.zoom.us/mcp/canvas/streamable` | `docs:read:*`, `docs:write:*`, `docs:update:*`, and `docs:delete:*` scopes required by the selected Canvas tools |
+| Zoom Chat MCP | `https://mcp.zoom.us/mcp/chat/streamable` | `team_chat:read:*`, `team_chat:write:*`, and `team_chat:update:*` scopes required by the selected Chat tools |
+| Zoom Tasks MCP | `https://mcp.zoom.us/mcp/tasks/streamable` | `tasks:read:*`, `tasks:write:*`, `tasks:update:*`, and `tasks:delete:*` scopes required by the selected Tasks tools |
+| Zoom Revenue Accelerator MCP | `https://mcp.zoom.us/mcp/revenue_accelerator/streamable` | `zra:read:*` scopes required by the selected Revenue Accelerator tools |
+| Zoom Whiteboard MCP | `https://mcp.zoom.us/mcp/whiteboard/streamable` | `whiteboard:read:*`, `whiteboard:write:*`, `whiteboard:update:*`, and `whiteboard:delete:*` scopes required by the selected Whiteboard tools |
 
-Zoom Docs MCP server: `https://mcp.zoom.us/mcp/docs/streamable`
-
-Documented tool scopes, accurate as of 10 Apr 2026:
-- `create_file_with_content` → `docs:write:import`
-- `get_file_content` → `docs:read:export`
-
-Zoom Whiteboard MCP server: `https://mcp.zoom.us/mcp/whiteboard/streamable`
-
-Documented tool scopes, accurate as of 10 Apr 2026:
-- `add_a_whiteboard_collaborator` → `whiteboard:write:collaborator:admin`
-- `create_a_whiteboard` → `whiteboard:write:whiteboard`
-- `create_a_whiteboard_by_script` → `whiteboard:write:whiteboard`
-- `create_a_whiteboard_for_brainstorming` → `whiteboard:write:whiteboard`
-- `create_a_whiteboard_for_meeting_summary` → `whiteboard:write:whiteboard`
-- `create_a_whiteboard_for_strategy_analysis` → `whiteboard:write:whiteboard`
-- `delete_a_whiteboard_collaborator` → `whiteboard:delete:collaborator:admin`
-- `get_a_whiteboard` → `whiteboard:read:whiteboard:admin`
-- `get_a_whiteboard_collaborator` → `whiteboard:read:list_collaborators:admin`
-- `list_whiteboards` → `whiteboard:read:list_whiteboards:admin`
-- `update_a_whiteboard_collaborator` → `whiteboard:update:collaborator:admin`
-
-Optional Zoom Team Chat MCP server: `https://mcp.zoom.us/mcp/team_chat/streamable`
-
-This plugin documents Team Chat MCP, but does not register it in `.mcp.json` by default.
-Use it only when the user explicitly wants write-capable Team Chat MCP tooling.
-
-- `zoom_chat_message_send` → `team_chat:write:user_message`
-- `zoom_chat_message_update` → `team_chat:update:user_message`
-- `zoom_chat_contact_add` → `team_chat:write:contact_information`
-- `zoom_chat_channel_create` → `team_chat:write:user_channel`
-- `zoom_chat_channel_update` → `team_chat:update:user_channel`
-- `zoom_chat_channel_members_add` → `team_chat:write:members`
+Do not request wildcard scopes. Expand the exact granular scopes from the catalog for the tools
+the workflow will call. The old `/mcp/docs` and `/mcp/team_chat` paths are legacy compatibility
+surfaces, not new server entries.
 
 ## Related Skills
 

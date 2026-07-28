@@ -118,14 +118,17 @@ sent to the wrong MCP surface.
 
 **Fix:**
 - Zoom MCP: `https://mcp.zoom.us/mcp/zoom/streamable`
-- Zoom Docs MCP: `https://mcp.zoom.us/mcp/docs/streamable`
+- Zoom Meetings MCP: `https://mcp.zoom.us/mcp/meeting/streamable`
+- Zoom Canvas MCP: `https://mcp.zoom.us/mcp/canvas/streamable`
+- Zoom Chat MCP: `https://mcp.zoom.us/mcp/chat/streamable`
+- Zoom Tasks MCP: `https://mcp.zoom.us/mcp/tasks/streamable`
+- Zoom Revenue Accelerator MCP: `https://mcp.zoom.us/mcp/revenue_accelerator/streamable`
 - Whiteboard MCP: `https://mcp.zoom.us/mcp/whiteboard/streamable`
-- Team Chat MCP: `https://mcp.zoom.us/mcp/team_chat/streamable`
 - re-run `tools/list`
 - use the current tool names exposed by that server
-- if the request is Zoom Docs-specific, use the dedicated Docs MCP server
+- if the request is Canvas or Docs-specific, use the Canvas MCP server
 - if the request is Whiteboard-specific, route to [../whiteboard/SKILL.md](../whiteboard/SKILL.md)
-- if the request is write-capable Team Chat MCP, route to [../team-chat/SKILL.md](../team-chat/SKILL.md)
+- if the request is Chat-specific, route to [../team-chat/SKILL.md](../team-chat/SKILL.md)
 
 ### MCP server not appearing in the client
 

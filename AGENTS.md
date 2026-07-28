@@ -31,6 +31,7 @@ Primary capabilities:
 - `skills/` — all plugin skills and supporting references
 - `README.md` — user-facing overview
 - `CONNECTORS.md` — bundled MCP connector notes
+- `skills/zoom-mcp/references/servers.md` — current Zoom MCP server catalog and scope mappings
 
 ## Usage Notes
 

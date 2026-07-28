@@ -1,11 +1,10 @@
 ---
 name: zoom-mcp/team-chat
 description: |
-  Zoom Team Chat MCP server guidance. Use for Team Chat MCP endpoints, OAuth scopes,
-  and write-capable tool workflows such as sending or editing messages, creating or
-  updating channels, adding channel members, and sending contact invitations. Prefer
-  this child skill when the request is specifically about Team Chat MCP rather than
-  default Zoom MCP search or deterministic Team Chat REST API implementation.
+  Zoom Chat MCP server guidance. Use for Chat MCP endpoints, OAuth scopes, and tool
+  workflows such as sending or editing messages, creating or updating channels, searching
+  files, listing sessions, adding members, and sending contact invitations. The folder name
+  remains `team-chat` for compatibility with existing links.
 user-invocable: false
 triggers:
   - "team chat mcp"
@@ -19,9 +18,10 @@ triggers:
   - "zoom_chat_channel_create"
 ---
 
-# Zoom MCP Team Chat
+# Zoom MCP Chat
 
-Dedicated guidance for Zoom's Team Chat MCP server.
+Dedicated guidance for Zoom's Chat MCP server. Zoom renamed Team Chat to Chat; the folder and
+trigger names remain compatible with existing plugin references.
 
 Use this MCP surface for agent-driven Team Chat actions. Use
 [../../team-chat/SKILL.md](../../team-chat/SKILL.md) when the user needs deterministic REST
@@ -32,36 +32,43 @@ that should not depend on agent tool invocation.
 
 | Transport | URL |
 |-----------|-----|
-| Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/team_chat/streamable` |
-| SSE (fallback) | `https://mcp.zoom.us/mcp/team_chat/sse` |
+| Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/chat/streamable` |
 
-This plugin documents the Team Chat MCP surface but does not register it in
-[../../../.mcp.json](../../../.mcp.json) by default. Add it manually if a workflow needs
-write-capable Team Chat MCP tools.
+This plugin documents the Chat MCP surface but does not register it in
+[../../../.mcp.json](../../../.mcp.json) by default. Add it manually when a workflow needs
+Chat MCP tools.
 
 ## Authentication
 
 - OAuth bearer tokens are passed through the MCP `Authorization` header.
 - Start app registration from the
-  [Team Chat MCP template](../../rest-api/assets/marketplace-apps/marketplace-manifest-template-for-mcp-team-chat.json).
-- The protected-resource metadata endpoint is `https://mcp.zoom.us/.well-known/oauth-protected-resource/mcp_team_chat`.
-- The server is scoped to the caller's account and subject to Team Chat policy restrictions.
+  [Chat MCP template](../../rest-api/assets/marketplace-apps/marketplace-manifest-template-for-mcp-team-chat.json).
+- Use the server's OAuth protected-resource metadata to confirm the current scope advertisement.
+- The server is scoped to the caller's account and subject to Chat policy restrictions.
 - End-to-end encrypted, archived, retention-restricted, or policy-blocked chats may not be accessible or mutable through this surface.
 
 ## Required Scopes
 
-Team Chat MCP scopes advertised by protected-resource metadata:
+Chat MCP scopes required by the current tools:
 
+- `team_chat:read:channel`
+- `team_chat:update:channel_member_role`
+- `team_chat:write:members`
+- `team_chat:read:list_members`
+- `team_chat:update:user_channel`
+- `team_chat:read:list_user_channels`
+- `team_chat:read:list_contacts`
+- `team_chat:read:list_user_files`
+- `team_chat:read:list_user_messages`
+- `team_chat:read:list_user_sessions`
 - `team_chat:write:user_message`
 - `team_chat:update:user_message`
 - `team_chat:write:contact_information`
 - `team_chat:write:user_channel`
-- `team_chat:update:user_channel`
-- `team_chat:write:members`
 
 ## Safety Rules
 
-This server contains write-capable tools. Before invoking a write tool:
+This server contains read and write tools. Before invoking a write tool:
 
 1. Confirm the user explicitly asked to send, edit, create, update, invite, or add members.
 2. Resolve IDs carefully. `chat_session_id` may be a user/member ID, user email for 1:1 messages, or a channel ID.
@@ -71,14 +78,28 @@ This server contains write-capable tools. Before invoking a write tool:
 
 ## Available Tools
 
-The current Team Chat MCP tool surface is:
+The current Chat MCP tool surface is:
 
+- `zoom_chat_channel_create`
+- `zoom_chat_channel_get_by_id`
+- `zoom_chat_channel_member_role_update`
+- `zoom_chat_channel_members_add`
+- `zoom_chat_channel_members_list`
+- `zoom_chat_channel_update`
+- `zoom_chat_channels_list`
+- `zoom_chat_channels_search`
+- `zoom_chat_contact_add`
+- `zoom_chat_contacts_get_by_id`
+- `zoom_chat_contacts_search`
+- `zoom_chat_files_search`
+- `zoom_chat_message_get_by_id`
+- `zoom_chat_message_replies_list`
 - `zoom_chat_message_send`
 - `zoom_chat_message_update`
-- `zoom_chat_contact_add`
-- `zoom_chat_channel_create`
-- `zoom_chat_channel_update`
-- `zoom_chat_channel_members_add`
+- `zoom_chat_messages_fetch`
+- `zoom_chat_messages_filter`
+- `zoom_chat_messages_search`
+- `zoom_chat_sessions_recent_list`
 
 Some MCP clients namespace server tools in the UI. Treat the raw tool names above as
 authoritative after `tools/list`.
@@ -145,5 +166,5 @@ zoom_chat_channel_members_add
 
 ## References
 
-- [references/tools.md](references/tools.md) - Team Chat MCP tool catalog, parameters, scopes, and constraints.
+- [references/tools.md](references/tools.md) - Chat MCP tool catalog, parameters, scopes, and constraints.
 - Zoom docs: https://developers.zoom.us/docs/mcp/zoom-chat-mcp-server/

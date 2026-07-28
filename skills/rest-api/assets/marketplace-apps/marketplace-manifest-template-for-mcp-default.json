@@ -7,7 +7,7 @@
   "manifest": {
     "display_information": {
       "display_name": "Zoom MCP Connector",
-      "description": "Authorizes an MCP client to use Zoom search, meeting assets, recordings, and Docs tools."
+      "description": "Authorizes an MCP client to use Zoom search, meeting assets, recordings, Docs, and Hub tools."
     },
     "oauth_information": {
       "usage": "USER_OPERATION",
