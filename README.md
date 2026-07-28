@@ -107,11 +107,12 @@ MCP server first. Replace the example hostname with the current trusted helper e
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://YOUR_NGROK_HOST.ngrok-free.app/mcp
+  https://YOUR_HELPER_TUNNEL_HOST/mcp
 ```
 
 Then run `/setup-zoom-marketplace-app` and ask Claude Code to use `zoom-marketplace-helper`.
-The helper is external to this plugin. Its MCP endpoint must already be reachable by Claude Code.
+The helper is external to this plugin. Its MCP endpoint must already be reachable by Claude Code;
+use an `ngrok` or Cloudflare Tunnel URL if the helper is running locally.
 
 #### Test a new app without deploying it
 
@@ -142,6 +143,11 @@ The tunnel only forwards requests; it does not create these routes or handle OAu
 validation for you. Free or ephemeral tunnel URLs can change, so update the Marketplace app
 configuration and any generated manifest values whenever the tunnel hostname changes. Use a
 deployed HTTPS service or a reserved tunnel hostname when the URL must remain stable.
+
+Before asking `zoom-marketplace-helper` to create or update the app, provide the current tunnel
+host and route paths. After every tunnel restart, update the development OAuth redirect URL and
+OAuth allow list, development home URL, and development webhook URL before testing. Keep the
+production URLs unchanged unless you intentionally want to test the tunnel as production.
 
 The app tunnel and the helper MCP endpoint are separate concerns. If both are running locally,
 each service needs a publicly reachable HTTPS URL, or the helper can be deployed while only the

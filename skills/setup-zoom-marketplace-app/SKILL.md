@@ -28,15 +28,37 @@ Start the helper first, expose its `/mcp` endpoint over HTTPS, and register the 
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://YOUR_NGROK_HOST.ngrok-free.app/mcp
+  https://YOUR_HELPER_TUNNEL_HOST/mcp
 ```
 
-Replace `YOUR_NGROK_HOST` with the hostname for the running helper. A temporary ngrok URL can
-change when the tunnel restarts, so update the Claude Code server registration when that happens.
+Replace `YOUR_HELPER_TUNNEL_HOST` with the hostname for the running helper. If the helper is
+local, expose its port with `ngrok http HELPER_PORT` or
+`cloudflared tunnel --url http://localhost:HELPER_PORT`. A temporary tunnel URL can change when
+the tunnel restarts, so update the Claude Code server registration when that happens.
 Only register a helper endpoint that you trust because it can create or modify Marketplace apps
 and may handle app credentials. After registration, use `/setup-zoom-marketplace-app` and tell
 Claude Code to use the `zoom-marketplace-helper` MCP server for the requested Marketplace
 operation.
+
+### Local Tunnel URL Synchronization
+
+When the app being created or updated runs locally, expose the app with `ngrok` or Cloudflare
+Tunnel before using the helper. The helper's own public MCP endpoint and the app's public test
+URL are separate concerns.
+
+Before creating or updating the app, collect the current app tunnel hostname and the actual
+route paths. For a development configuration, update the matching fields in the manifest:
+
+- `oauth_information.development_redirect_uri`
+- `oauth_information.oauth_allow_list`
+- `features.development_home_uri`, when the app has a home URL
+- `event_subscription.subscriptions[].development_webhook_url`, when the app has webhooks
+
+After every tunnel restart, assume the previous hostname is invalid and update these development
+URLs before testing OAuth, opening the app home page, or waiting for webhook delivery. Do not
+replace production URLs with an ephemeral tunnel unless the user explicitly requests that.
+The tunnel forwards traffic only; the local server must implement each route and its OAuth or
+webhook validation behavior.
 
 ## Primary References
 
