@@ -155,12 +155,13 @@ const { sanitizeMessage } = require('./validation');
 /**
  * Send chatbot message
  */
-async function sendChatbotMessage(toJid, accountId, content) {
+async function sendChatbotMessage({ toJid, userJid, accountId, content }) {
   const accessToken = await getChatbotToken();
 
   const body = {
     robot_jid: process.env.ZOOM_BOT_JID,
     to_jid: toJid,
+    user_jid: userJid,
     account_id: accountId,
     content: content
   };
@@ -174,68 +175,82 @@ async function sendChatbotMessage(toJid, accountId, content) {
     body: JSON.stringify(body),
   });
 
+  const responseBody = await response.json().catch(() => null);
+  console.log('Zoom chatbot message response', {
+    status: response.status,
+    body: responseBody
+  });
+
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(`Send message error: ${JSON.stringify(error)}`);
+    throw new Error(`Send message error: ${JSON.stringify(responseBody)}`);
   }
 
-  return response.json();
+  return responseBody;
 }
 
 /**
  * Send simple text message
  */
-async function sendTextMessage(toJid, accountId, text) {
-  return sendChatbotMessage(toJid, accountId, {
-    body: [
-      { type: 'message', text: sanitizeMessage(text) }
-    ]
+async function sendTextMessage(context, text) {
+  return sendChatbotMessage({
+    ...context,
+    content: {
+      body: [
+        { type: 'message', text: sanitizeMessage(text) }
+      ]
+    }
   });
 }
 
 /**
  * Send message with buttons
  */
-async function sendMessageWithButtons(toJid, accountId, options) {
+async function sendMessageWithButtons(context, options) {
   const { title, message, buttons } = options;
 
-  return sendChatbotMessage(toJid, accountId, {
-    head: {
-      text: title
-    },
-    body: [
-      { type: 'message', text: sanitizeMessage(message) },
-      {
-        type: 'actions',
-        items: buttons.map(btn => ({
-          text: btn.text,
-          value: btn.value,
-          style: btn.style || 'Default'
-        }))
-      }
-    ]
+  return sendChatbotMessage({
+    ...context,
+    content: {
+      head: {
+        text: title
+      },
+      body: [
+        { type: 'message', text: sanitizeMessage(message) },
+        {
+          type: 'actions',
+          items: buttons.map(btn => ({
+            text: btn.text,
+            value: btn.value,
+            style: btn.style || 'Default'
+          }))
+        }
+      ]
+    }
   });
 }
 
 /**
  * Send message with fields
  */
-async function sendMessageWithFields(toJid, accountId, options) {
+async function sendMessageWithFields(context, options) {
   const { title, fields } = options;
 
-  return sendChatbotMessage(toJid, accountId, {
-    head: {
-      text: title
-    },
-    body: [
-      {
-        type: 'fields',
-        items: fields.map(field => ({
-          key: field.key,
-          value: field.value
-        }))
-      }
-    ]
+  return sendChatbotMessage({
+    ...context,
+    content: {
+      head: {
+        text: title
+      },
+      body: [
+        {
+          type: 'fields',
+          items: fields.map(field => ({
+            key: field.key,
+            value: field.value
+          }))
+        }
+      ]
+    }
   });
 }
 
@@ -318,26 +333,33 @@ function handleUrlValidation(req, res) {
  * Handle bot notification (slash command or direct message)
  */
 async function handleBotNotification(payload, res) {
-  const { toJid, cmd, accountId, userName } = payload;
+  const { toJid, userJid, cmd, accountId, userName } = payload;
+
+  if (!toJid || !userJid || !accountId) {
+    return res.status(400).json({ error: 'bot_notification is missing toJid, userJid, or accountId' });
+  }
+
+  const messageContext = { toJid, userJid, accountId };
 
   console.log(`${userName} sent: ${cmd}`);
 
   // Respond immediately
   res.status(200).json({ success: true });
+  console.log('bot_notification acknowledged; outbound reply is still pending');
 
   // Process command asynchronously
   try {
     // Simple command router
     if (cmd.toLowerCase().includes('help')) {
-      await sendTextMessage(toJid, accountId, 
+      await sendTextMessage(messageContext,
         'Available commands:\n- help: Show this message\n- ping: Test bot\n- demo: Show demo buttons'
       );
     } 
     else if (cmd.toLowerCase().includes('ping')) {
-      await sendTextMessage(toJid, accountId, 'Pong! 🏓');
+      await sendTextMessage(messageContext, 'Pong! 🏓');
     } 
     else if (cmd.toLowerCase().includes('demo')) {
-      await sendMessageWithButtons(toJid, accountId, {
+      await sendMessageWithButtons(messageContext, {
         title: 'Demo Buttons',
         message: 'Click a button below:',
         buttons: [
@@ -348,7 +370,7 @@ async function handleBotNotification(payload, res) {
       });
     } 
     else {
-      await sendTextMessage(toJid, accountId, 
+      await sendTextMessage(messageContext,
         `You said: "${cmd}"\n\nType "help" to see available commands.`
       );
     }
@@ -361,7 +383,13 @@ async function handleBotNotification(payload, res) {
  * Handle button click
  */
 async function handleButtonClick(payload, res) {
-  const { actionItem, toJid, accountId, userName } = payload;
+  const { actionItem, toJid, userJid, accountId, userName } = payload;
+
+  if (!toJid || !userJid || !accountId) {
+    return res.status(400).json({ error: 'interactive_message_actions is missing toJid, userJid, or accountId' });
+  }
+
+  const messageContext = { toJid, userJid, accountId };
 
   console.log(`${userName} clicked: ${actionItem.value}`);
 
@@ -372,19 +400,19 @@ async function handleButtonClick(payload, res) {
   try {
     switch (actionItem.value) {
       case 'option_a':
-        await sendTextMessage(toJid, accountId, '✅ You selected Option A');
+        await sendTextMessage(messageContext, '✅ You selected Option A');
         break;
 
       case 'option_b':
-        await sendTextMessage(toJid, accountId, '✅ You selected Option B');
+        await sendTextMessage(messageContext, '✅ You selected Option B');
         break;
 
       case 'cancel':
-        await sendTextMessage(toJid, accountId, '❌ Cancelled');
+        await sendTextMessage(messageContext, '❌ Cancelled');
         break;
 
       default:
-        await sendTextMessage(toJid, accountId, `Unknown action: ${actionItem.value}`);
+        await sendTextMessage(messageContext, `Unknown action: ${actionItem.value}`);
     }
   } catch (error) {
     console.error('Error processing button click:', error);
@@ -460,12 +488,21 @@ Zoom will send a `endpoint.url_validation` request. If successful, you'll see a 
 
 You should see the bot respond with the help message!
 
+An HTTP 200 returned by the webhook only confirms that Zoom delivered the event. It does not
+confirm that the chatbot reply succeeded. Inspect the logged `/v2/im/chat/messages` response
+status and body, then confirm that the reply is visible in Team Chat.
+
 ## Testing Checklist
 
 - [ ] `/mybot help` - Shows help message
 - [ ] `/mybot ping` - Responds with "Pong! 🏓"
 - [ ] `/mybot demo` - Shows buttons
 - [ ] Click button - Sends confirmation message
+- [ ] `bot_notification` reached the webhook
+- [ ] `cmd`, `toJid`, `userJid`, and `accountId` were present
+- [ ] Chatbot token acquisition with `grant_type=client_credentials` succeeded
+- [ ] Outbound `/v2/im/chat/messages` response status and body were successful
+- [ ] Reply appeared visibly in Team Chat
 
 ## Production Deployment
 
@@ -512,6 +549,7 @@ NODE_ENV=production
 | Bot doesn't respond | Check ngrok is running and URL is correct |
 | URL validation fails | Ensure endpoint returns plainToken + encryptedToken |
 | Messages not sending | Verify Bot JID and Account ID are correct |
+| 401 code 7010 | Check token, Bot JID, credentials, and API environment all belong to the same Marketplace app |
 
 ## Resources
 

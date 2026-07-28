@@ -94,6 +94,7 @@ If you choose the wrong type early, auth/scopes/endpoints all mismatch and imple
 ### Chatbot API (Bot-Level)
 - Messages appear as sent by your **bot**
 - Requires **Client Credentials** grant
+- Do not use an authorization-code grant or user OAuth access token for chatbot messages
 - Endpoint: `POST https://api.zoom.us/v2/im/chat/messages`
 - Scopes: `imchat:bot` (auto-added)
 - **Rich cards**: buttons, forms, dropdowns, images
@@ -196,6 +197,7 @@ const response = await fetch('https://api.zoom.us/v2/im/chat/messages', {
   body: JSON.stringify({
     robot_jid: process.env.ZOOM_BOT_JID,
     to_jid: payload.toJid,           // From webhook
+    user_jid: payload.userJid,       // From bot_notification webhook
     account_id: payload.accountId,   // From webhook
     content: {
       head: {
@@ -222,7 +224,20 @@ const response = await fetch('https://api.zoom.us/v2/im/chat/messages', {
     }
   })
 });
+
+const responseBody = await response.json().catch(() => null);
+console.log('Zoom chatbot response', {
+  status: response.status,
+  body: responseBody
+});
+if (!response.ok) {
+  throw new Error(`Chatbot message failed: ${JSON.stringify(responseBody)}`);
+}
 ```
+
+An HTTP 200 from the webhook only confirms that Zoom delivered the event to your server. It does
+not confirm that the chatbot reply succeeded. Verify the outbound API status and response body,
+then confirm that the reply is visible in Team Chat.
 
 **Complete example**: [Chatbot Setup Guide](examples/chatbot-setup.md)
 
@@ -298,14 +313,19 @@ User types /command → Webhook receives bot_notification
 
 ```javascript
 case 'bot_notification': {
-  const { toJid, cmd, accountId } = payload;
+  const { toJid, userJid, cmd, accountId } = payload;
   
   // 1. Call your LLM
   const llmResponse = await callClaude(cmd);
   
   // 2. Send response back
-  await sendChatbotMessage(toJid, accountId, {
-    body: [{ type: 'message', text: llmResponse }]
+  await sendChatbotMessage({
+    toJid,
+    userJid,
+    accountId,
+    content: {
+      body: [{ type: 'message', text: llmResponse }]
+    }
   });
 }
 ```
@@ -345,11 +365,16 @@ await fetch('https://api.zoom.us/v2/chat/users/me/messages', {
 ```javascript
 // Webhook handler
 case 'interactive_message_actions': {
-  const { actionItem, toJid, accountId } = payload;
+  const { actionItem, toJid, userJid, accountId } = payload;
   
   if (actionItem.value === 'approve') {
-    await sendChatbotMessage(toJid, accountId, {
-      body: [{ type: 'message', text: '✅ Approved!' }]
+    await sendChatbotMessage({
+      toJid,
+      userJid,
+      accountId,
+      content: {
+        body: [{ type: 'message', text: '✅ Approved!' }]
+      }
     });
   }
 }

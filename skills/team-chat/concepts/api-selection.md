@@ -168,9 +168,31 @@ const response = await fetch('https://zoom.us/oauth/token', {
 const { access_token } = await response.json();
 
 // Step 2: Use access token to send bot messages
-fetch('https://api.zoom.us/v2/im/chat/messages', {
-  headers: { 'Authorization': `Bearer ${access_token}` }
+const messageResponse = await fetch('https://api.zoom.us/v2/im/chat/messages', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${access_token}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    robot_jid: process.env.ZOOM_BOT_JID,
+    to_jid: payload.toJid, // payload comes from bot_notification
+    user_jid: payload.userJid,
+    account_id: payload.accountId,
+    content: {
+      body: [{ type: 'message', text: 'Response text' }]
+    }
+  })
 });
+
+const messageBody = await messageResponse.json().catch(() => null);
+console.log('Chatbot message response', {
+  status: messageResponse.status,
+  body: messageBody
+});
+if (!messageResponse.ok) {
+  throw new Error(`Chatbot message failed: ${JSON.stringify(messageBody)}`);
+}
 ```
 
 ## Can I Use Both?

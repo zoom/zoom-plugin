@@ -19,7 +19,8 @@ Quick diagnostics and solutions for Zoom Team Chat development.
 
 **Fix**:
 - Use `https://zoom.us/oauth/token` for token exchange.
-- Do not use `https://zoom.us/oauth/token` for chatbot token requests.
+- Use `grant_type=client_credentials` for chatbot token requests.
+- Do not use the authorization-code flow or a user OAuth token for chatbot messages.
 
 Quick check:
 ```bash
@@ -138,6 +139,19 @@ console.log('Signature from Zoom:', req.headers['x-zm-signature']);
 2. Use Development Bot JID for testing
 3. Check Account ID matches the bot's account
 
+### `401` with code `7010` (`Invalid authorization token`)
+
+**Cause**: Credentials from different environments or Marketplace apps are being mixed.
+
+**Check all of these together**:
+
+- Development token sent to the production API, or production token sent to the development API
+- Bot JID belongs to a different environment than the token
+- Client ID, Client Secret, Account ID, and Bot JID belong to different Marketplace apps
+
+Use one consistent development or production app configuration for the token, API endpoint, and
+Bot JID before retrying.
+
 ## Message Sending Issues
 
 ### "Messages not appearing in Team Chat"
@@ -156,11 +170,17 @@ console.log('Signature from Zoom:', req.headers['x-zm-signature']);
    {
      "account_id": process.env.ZOOM_ACCOUNT_ID,  // Don't forget!
      "robot_jid": process.env.ZOOM_BOT_JID,
-     "to_jid": toJid
+     "to_jid": toJid,
+     "user_jid": userJid
    }
    ```
 
-3. **Incorrect content format**
+3. **Webhook acknowledgment mistaken for message success**
+   - A webhook HTTP 200 only confirms event receipt.
+   - Log and inspect the outbound `/v2/im/chat/messages` status and response body.
+   - Confirm the reply is visible in Team Chat.
+
+4. **Incorrect content format**
    ```javascript
    // ❌ Wrong
    { "text": "Hello" }

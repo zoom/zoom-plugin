@@ -18,6 +18,8 @@ Use **client credentials** when you want messages/actions to appear as a bot.
 
 - Typical endpoint:
   - Send bot message: `POST /v2/im/chat/messages`
+- Obtain the token with `grant_type=client_credentials`.
+- Do not use an authorization-code grant or a user OAuth access token for this endpoint.
 - Typical “scope”:
   - `imchat:bot` (added by enabling Chatbot feature on the app)
 
@@ -30,6 +32,7 @@ Use **client credentials** when you want messages/actions to appear as a bot.
 
 - **Server-to-Server OAuth** is not a fit for Zoom Team Chat chatbot features.
 - Team Chat API calls require a user token with the right scopes; “invalid access token” errors are almost always missing scopes or wrong app type.
+- Chatbot API calls require the chatbot client-credentials token; do not mix it with the Team Chat API user token.
 - OAuth URL split is easy to mix up:
   - authorize step: `https://zoom.us/oauth/authorize`
   - token step (all grant types): `https://zoom.us/oauth/token`

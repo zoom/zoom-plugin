@@ -273,6 +273,7 @@ Fired when:
 **Key Fields**:
 - `cmd` - User's input after the slash command
 - `toJid` - Where to send response (channel or DM)
+- `userJid` - User JID to include as `user_jid` in the outbound chatbot message
 - `accountId` - Account identifier
 
 **Use Case**: Process commands, integrate LLM, send responses
@@ -280,7 +281,7 @@ Fired when:
 **Implementation**:
 ```javascript
 async function handleBotNotification(payload, res) {
-  const { toJid, cmd, accountId, userName } = payload;
+  const { toJid, userJid, cmd, accountId, userName } = payload;
   
   console.log(`${userName} sent: ${cmd}`);
   
@@ -288,8 +289,13 @@ async function handleBotNotification(payload, res) {
   const response = await processCommand(cmd);
   
   // Send response
-  await sendChatbotMessage(toJid, accountId, {
-    body: [{ type: 'message', text: response }]
+  await sendChatbotMessage({
+    toJid,
+    userJid,
+    accountId,
+    content: {
+      body: [{ type: 'message', text: response }]
+    }
   });
   
   return res.status(200).json({ success: true });
@@ -307,6 +313,7 @@ Fired when user clicks a button in a chatbot message.
   "payload": {
     "accountId": "...",
     "toJid": "...",
+    "userJid": "...",
     "actionItem": {
       "text": "Approve",
       "value": "approve"  // This is what you check
@@ -322,20 +329,30 @@ Fired when user clicks a button in a chatbot message.
 **Implementation**:
 ```javascript
 async function handleButtonClick(payload, res) {
-  const { actionItem, toJid, accountId, userName } = payload;
+  const { actionItem, toJid, userJid, accountId, userName } = payload;
   
   console.log(`${userName} clicked: ${actionItem.value}`);
   
   switch (actionItem.value) {
     case 'approve':
-      await sendChatbotMessage(toJid, accountId, {
-        body: [{ type: 'message', text: '✅ Approved!' }]
+      await sendChatbotMessage({
+        toJid,
+        userJid,
+        accountId,
+        content: {
+          body: [{ type: 'message', text: '✅ Approved!' }]
+        }
       });
       break;
     
     case 'reject':
-      await sendChatbotMessage(toJid, accountId, {
-        body: [{ type: 'message', text: '❌ Rejected' }]
+      await sendChatbotMessage({
+        toJid,
+        userJid,
+        accountId,
+        content: {
+          body: [{ type: 'message', text: '❌ Rejected' }]
+        }
       });
       break;
     
@@ -386,6 +403,10 @@ app.post('/webhook', async (req, res) => {
   res.status(200).json({ success: true });
 });
 ```
+
+The webhook response is only an event receipt acknowledgment. It does not prove that
+`POST /v2/im/chat/messages` succeeded. Log and inspect the outbound response status and body,
+then verify that the reply is visible in Team Chat.
 
 ### 3. Handle All Events Gracefully
 

@@ -8,6 +8,8 @@
 | `ZOOM_CLIENT_SECRET` | Yes | OAuth token exchange | Zoom Marketplace -> Team Chat app -> App Credentials |
 | `ZOOM_REDIRECT_URI` | OAuth code flow | Callback URL for installs/auth | Zoom Marketplace -> OAuth redirect/allow list |
 | `ZOOM_BOT_JID` | Chatbot flows | Target bot identifier | Team Chat app/chatbot configuration after setup |
+| `ZOOM_ACCOUNT_ID` | Chatbot flows | Account identifier in outbound bot messages | Marketplace app/account configuration |
+| `ZOOM_TARGET_USER_JID` | Scheduled chatbot flows | Target user JID when no `bot_notification` payload exists | Your application state or configured recipient |
 | `ZOOM_SECRET_TOKEN` | Recommended | Event/webhook signature verification | Zoom Marketplace -> Event Subscriptions -> Secret Token |
 | `ZOOM_VERIFICATION_TOKEN` | Legacy only | Legacy verification path | Zoom Marketplace legacy fields (older apps) |
 

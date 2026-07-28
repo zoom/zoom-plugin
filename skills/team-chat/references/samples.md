@@ -90,7 +90,7 @@ async function getChatbotToken() {
 - ✅ Environment variables for credentials
 - ✅ Modular route structure
 - ✅ Error handling with try/catch
-- ✅ Immediate webhook response (200 status)
+- ✅ Immediate webhook response (200 status), followed by separate outbound API verification
 
 **Recommended For**: First-time chatbot developers
 
@@ -109,7 +109,7 @@ async function getChatbotToken() {
 **LLM Integration Pattern**:
 ```javascript
 case 'bot_notification': {
-  const { toJid, cmd, accountId } = payload;
+  const { toJid, userJid, cmd, accountId } = payload;
   
   // Call Claude API
   const response = await anthropic.messages.create({
@@ -121,8 +121,13 @@ case 'bot_notification': {
   const llmResponse = response.content[0].text;
   
   // Send back to Zoom
-  await sendChatbotMessage(toJid, accountId, {
-    body: [{ type: 'message', text: llmResponse }]
+  await sendChatbotMessage({
+    toJid,
+    userJid,
+    accountId,
+    content: {
+      body: [{ type: 'message', text: llmResponse }]
+    }
   });
 }
 ```
@@ -232,18 +237,24 @@ const cron = require('node-cron');
 // Daily report at 9 AM
 cron.schedule('0 9 * * *', async () => {
   const report = await getERPReport();
-  
-  await sendChatbotMessage(channelJid, accountId, {
-    head: { "text": "Daily ERP Report" },
-    body: [
-      { "type": "fields", "items": report.fields },
-      {
-        "type": "actions",
-        "items": [
-          { "text": "View Details", "value": "view_report" }
-        ]
-      }
-    ]
+
+  // Scheduled messages need a configured target user JID; there is no bot_notification payload.
+  await sendChatbotMessage({
+    toJid: channelJid,
+    userJid: process.env.ZOOM_TARGET_USER_JID,
+    accountId,
+    content: {
+      head: { "text": "Daily ERP Report" },
+      body: [
+        { "type": "fields", "items": report.fields },
+        {
+          "type": "actions",
+          "items": [
+            { "text": "View Details", "value": "view_report" }
+          ]
+        }
+      ]
+    }
   });
 });
 ```

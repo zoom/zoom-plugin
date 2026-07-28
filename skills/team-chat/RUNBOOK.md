@@ -12,6 +12,8 @@ Use this before deep debugging. It catches the most common Team Chat failures fa
 
 - User type (Team Chat API): user OAuth + `/v2/chat/users/...`
 - Bot type (Chatbot API): client credentials + `/v2/im/chat/messages`
+- For bot type, use only `grant_type=client_credentials`; never send a user OAuth token to the
+  chatbot message endpoint.
 
 If this is wrong, everything else will fail.
 
@@ -82,4 +84,8 @@ If callback returns but token is missing, focus on `state` validation and persis
 - **404 on bot token** -> check token URL (`/oauth/token`), then proxy path.
 - **All channel APIs 404** -> route mismatch (old UI vs new backend routes).
 - **OAuth works but sends fail** -> wrong scopes or app type mismatch.
+- **Webhook returns 200 but no reply** -> inspect the outbound `/im/chat/messages` status and body;
+  webhook 200 only acknowledges event receipt.
+- **401 code 7010** -> check that token, Bot JID, Client ID, Client Secret, and API environment
+  all belong to the same development or production Marketplace app.
 - **Works by curl but fails in browser** -> blocked client/cached old JS.
