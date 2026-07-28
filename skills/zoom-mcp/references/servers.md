@@ -20,9 +20,9 @@ transport and schema details.
 | Zoom Revenue Accelerator MCP Server | `https://mcp.zoom.us/mcp/revenue_accelerator/streamable` | 15 | Conversations, deals, analysis, scorecards, CRM, teams |
 | Zoom Whiteboard MCP Server | `https://mcp.zoom.us/mcp/whiteboard/streamable` | 11 | Whiteboard and collaborator operations |
 
-The plugin's `.mcp.json` contains the previously bundled core definitions. The other current
-official servers can be registered manually when their product license, scopes, and workflow
-requirements apply.
+The plugin's `.mcp.json` contains all 7 current official server definitions. Each server uses
+its own environment variable in the bundle so deployments can isolate tokens if needed. A
+single user-level OAuth token may be assigned to all variables when it has the required scopes.
 
 Official product pages:
 

@@ -61,8 +61,9 @@ The main Zoom MCP server also exposes Docs and Hub-capable tools:
 - main `zoom-mcp`: `hub_create_file_from_content`, `hub_get_file_content`
 - current `zoom-canvas-mcp`: `create_file_with_content`, `get_file_content`
 
-The old `zoom-docs-mcp` endpoint at `/mcp/docs/streamable` is retained only for compatibility and
-is not part of the current official server catalog.
+The old dedicated Docs endpoint at `/mcp/docs/streamable` is retained only for compatibility and
+is not part of the current official server catalog. Use `zoom-canvas-mcp` for current Docs and
+Canvas workflows.
 
 ### `create_file_with_content`
 

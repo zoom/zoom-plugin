@@ -15,9 +15,17 @@ For Claude Code, export the bearer tokens before using the bundled MCP servers:
 
 ```bash
 export ZOOM_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
-export ZOOM_DOCS_MCP_ACCESS_TOKEN="your_zoom_docs_mcp_access_token"
+export ZOOM_MEETINGS_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_CANVAS_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_CHAT_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_TASKS_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_REVENUE_ACCELERATOR_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 export ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 ```
+
+The same access token can be assigned to each variable when the General App includes the
+scopes required by all selected MCP servers. Use separate tokens if you want to keep server
+permissions isolated.
 
 ## Slash Workflows
 
@@ -156,9 +164,9 @@ app uses a local tunnel.
 See [CONNECTORS.md](CONNECTORS.md). The plugin works standalone from the bundled skills, and gets supercharged when Claude can use the bundled Zoom MCP servers from [`.mcp.json`](.mcp.json).
 
 The current official Zoom MCP catalog contains the main Zoom MCP, Meetings, Canvas, Chat, Tasks,
-Revenue Accelerator, and Whiteboard servers. This plugin currently bundles the main, legacy Docs,
-and Whiteboard definitions in [`.mcp.json`](.mcp.json); the complete inventory and current
-endpoints are in [`skills/zoom-mcp/references/servers.md`](skills/zoom-mcp/references/servers.md).
+Revenue Accelerator, and Whiteboard servers. All 7 current server definitions are bundled in
+[`.mcp.json`](.mcp.json); the complete inventory and current endpoints are in
+[`skills/zoom-mcp/references/servers.md`](skills/zoom-mcp/references/servers.md).
 For new document workflows, prefer Zoom Canvas MCP. For new chat workflows, prefer Zoom Chat MCP.
 
 ## Cross-Platform Notes

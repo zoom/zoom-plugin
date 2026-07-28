@@ -10,28 +10,22 @@ This plugin works in two modes:
 | Connector | Endpoint | Use For |
 |---|---|---|
 | `zoom-mcp` | `https://mcp.zoom.us/mcp/zoom/streamable` | Zoom MCP Server workflows for meeting search, cross-Zoom search, recordings, meeting assets, Docs, and Hub content |
-| `zoom-docs-mcp` | `https://mcp.zoom.us/mcp/docs/streamable` | Legacy dedicated Docs compatibility surface; prefer Zoom Canvas MCP for new workflows |
+| `zoom-meetings-mcp` | `https://mcp.zoom.us/mcp/meeting/streamable` | Meeting-specific search, assets, and recording workflows |
+| `zoom-canvas-mcp` | `https://mcp.zoom.us/mcp/canvas/streamable` | Canvas/Docs files, blocks, collaborators, and access workflows |
+| `zoom-chat-mcp` | `https://mcp.zoom.us/mcp/chat/streamable` | Chat messages, channels, contacts, files, and sessions |
+| `zoom-tasks-mcp` | `https://mcp.zoom.us/mcp/tasks/streamable` | Tasks, steps, comments, assignees, and collaborators |
+| `zoom-revenue-accelerator-mcp` | `https://mcp.zoom.us/mcp/revenue_accelerator/streamable` | Revenue Accelerator conversations, deals, analysis, scorecards, CRM, and team workflows |
 | `zoom-whiteboard-mcp` | `https://mcp.zoom.us/mcp/whiteboard/streamable` | Whiteboard-specific MCP workflows |
 
 The complete current Zoom server inventory is in
 [skills/zoom-mcp/references/servers.md](./skills/zoom-mcp/references/servers.md).
 
-## Current Official MCP Surfaces Not Bundled by Default
-
-| Surface | Endpoint | Notes |
-|---|---|---|
-| Zoom Meetings MCP | `https://mcp.zoom.us/mcp/meeting/streamable` | Product-specific meeting search, meeting assets, and recording tools. |
-| Zoom Canvas MCP | `https://mcp.zoom.us/mcp/canvas/streamable` | Current Docs/Canvas file, block, collaborator, and access tools. |
-| Zoom Chat MCP | `https://mcp.zoom.us/mcp/chat/streamable` | Read/write Chat messages, channels, contacts, files, and sessions. The child guidance remains under [`skills/zoom-mcp/team-chat/`](./skills/zoom-mcp/team-chat/). |
-| Zoom Tasks MCP | `https://mcp.zoom.us/mcp/tasks/streamable` | Task, step, comment, assignee, and collaborator tools. |
-| Zoom Revenue Accelerator MCP | `https://mcp.zoom.us/mcp/revenue_accelerator/streamable` | Conversation, deal, analysis, scorecard, CRM, and team tools. |
-
 ## Legacy Compatibility Paths
 
-The bundled `zoom-docs-mcp` definition and the former Team Chat path may still respond, but they
-are not current entries in Zoom's published MCP server directory. Use Zoom Canvas for new Docs
-workflows and Zoom Chat at `/mcp/chat/streamable` for new Chat workflows. Use only the current
-`mcp.zoom.us` production host.
+The former `/mcp/docs` and `/mcp/team_chat` paths may still respond, but they are not current
+entries in Zoom's published MCP server directory. Use Zoom Canvas for new Docs workflows and
+Zoom Chat at `/mcp/chat/streamable` for new Chat workflows. Use only the current `mcp.zoom.us`
+production host.
 
 ## Authentication
 
@@ -39,16 +33,24 @@ The bundled MCP definitions expect bearer tokens in these environment variables:
 
 ```bash
 export ZOOM_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
-export ZOOM_DOCS_MCP_ACCESS_TOKEN="your_zoom_docs_mcp_access_token"
+export ZOOM_MEETINGS_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_CANVAS_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_CHAT_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_TASKS_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
+export ZOOM_REVENUE_ACCELERATOR_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 export ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 ```
 
 - **Claude Cowork**: use the published Zoom connector in Claude's connector directory and complete OAuth in the connector flow.
 - **Claude Code**: do not rely on the built-in `Authenticate` button for `zoom-mcp`; complete Zoom user-level OAuth yourself, export the token, reconnect the plugin, then use [`/setup-zoom-mcp`](./skills/setup-zoom-mcp/SKILL.md).
 - `ZOOM_MCP_ACCESS_TOKEN` is used for the main Zoom MCP server.
-- `ZOOM_DOCS_MCP_ACCESS_TOKEN` is used for the legacy dedicated Docs MCP definition.
+- `ZOOM_MEETINGS_MCP_ACCESS_TOKEN` is used for Zoom Meetings MCP.
+- `ZOOM_CANVAS_MCP_ACCESS_TOKEN` is used for Zoom Canvas MCP.
+- `ZOOM_CHAT_MCP_ACCESS_TOKEN` is used for Zoom Chat MCP.
+- `ZOOM_TASKS_MCP_ACCESS_TOKEN` is used for Zoom Tasks MCP.
+- `ZOOM_REVENUE_ACCELERATOR_MCP_ACCESS_TOKEN` is used for Zoom Revenue Accelerator MCP.
 - `ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN` is used for the Whiteboard MCP server.
-- If one OAuth token includes both the main Zoom MCP scopes and the Zoom Docs MCP scopes, both variables can use the same value.
+- The same OAuth token can be used for all variables when it includes the scopes required by the selected servers.
 - After setting or rotating any of these tokens, restart Claude Code or re-enable the plugin so the MCP servers restart with the new environment.
 
 ## What You Can Do Without Connectors

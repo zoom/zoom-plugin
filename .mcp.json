@@ -7,11 +7,39 @@
         "Authorization": "Bearer ${ZOOM_MCP_ACCESS_TOKEN}"
       }
     },
-    "zoom-docs-mcp": {
+    "zoom-meetings-mcp": {
       "type": "http",
-      "url": "https://mcp.zoom.us/mcp/docs/streamable",
+      "url": "https://mcp.zoom.us/mcp/meeting/streamable",
       "headers": {
-        "Authorization": "Bearer ${ZOOM_DOCS_MCP_ACCESS_TOKEN}"
+        "Authorization": "Bearer ${ZOOM_MEETINGS_MCP_ACCESS_TOKEN}"
+      }
+    },
+    "zoom-canvas-mcp": {
+      "type": "http",
+      "url": "https://mcp.zoom.us/mcp/canvas/streamable",
+      "headers": {
+        "Authorization": "Bearer ${ZOOM_CANVAS_MCP_ACCESS_TOKEN}"
+      }
+    },
+    "zoom-chat-mcp": {
+      "type": "http",
+      "url": "https://mcp.zoom.us/mcp/chat/streamable",
+      "headers": {
+        "Authorization": "Bearer ${ZOOM_CHAT_MCP_ACCESS_TOKEN}"
+      }
+    },
+    "zoom-tasks-mcp": {
+      "type": "http",
+      "url": "https://mcp.zoom.us/mcp/tasks/streamable",
+      "headers": {
+        "Authorization": "Bearer ${ZOOM_TASKS_MCP_ACCESS_TOKEN}"
+      }
+    },
+    "zoom-revenue-accelerator-mcp": {
+      "type": "http",
+      "url": "https://mcp.zoom.us/mcp/revenue_accelerator/streamable",
+      "headers": {
+        "Authorization": "Bearer ${ZOOM_REVENUE_ACCELERATOR_MCP_ACCESS_TOKEN}"
       }
     },
     "zoom-whiteboard-mcp": {

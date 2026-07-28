@@ -7,7 +7,11 @@ Quick diagnostic checklist before using the Zoom MCP server.
 **1. Token exported for the bundled connector?**
 ```bash
 echo "${ZOOM_MCP_ACCESS_TOKEN:+set}"
-echo "${ZOOM_DOCS_MCP_ACCESS_TOKEN:+set}"
+echo "${ZOOM_MEETINGS_MCP_ACCESS_TOKEN:+set}"
+echo "${ZOOM_CANVAS_MCP_ACCESS_TOKEN:+set}"
+echo "${ZOOM_CHAT_MCP_ACCESS_TOKEN:+set}"
+echo "${ZOOM_TASKS_MCP_ACCESS_TOKEN:+set}"
+echo "${ZOOM_REVENUE_ACCELERATOR_MCP_ACCESS_TOKEN:+set}"
 echo "${ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN:+set}"
 ```
 If empty, export the relevant token using [concepts/oauth-setup.md](concepts/oauth-setup.md).

@@ -1,8 +1,8 @@
 # Create a Zoom Doc
 
-Use either the main `zoom-mcp` server or the dedicated `zoom-docs-mcp` server for Zoom Docs
-creation and retrieval. The main server exposes `create_new_file_with_markdown`; the dedicated
-Docs server exposes `create_file_with_content` and `get_file_content`.
+Use either the main `zoom-mcp` server or the current `zoom-canvas-mcp` server for Zoom Docs
+creation and retrieval. The main server exposes `create_new_file_with_markdown` and
+`get_file_content`; Canvas exposes `create_file_with_content` and `get_file_content`.
 
 ## Required Scope
 
@@ -34,8 +34,7 @@ create_new_file_with_markdown
   content: "# Action Items\n\n- Owner: ..."
 ```
 
-If using the dedicated `zoom-docs-mcp` server, call `create_file_with_content` with the same
-Markdown content.
+If using `zoom-canvas-mcp`, call `create_file_with_content` with the same Markdown content.
 
 Optional parameter:
 - `parent_id` to place the document under a specific folder or parent object

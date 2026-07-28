@@ -34,9 +34,8 @@ that should not depend on agent tool invocation.
 |-----------|-----|
 | Streamable HTTP (recommended) | `https://mcp.zoom.us/mcp/chat/streamable` |
 
-This plugin documents the Chat MCP surface but does not register it in
-[../../../.mcp.json](../../../.mcp.json) by default. Add it manually when a workflow needs
-Chat MCP tools.
+This plugin registers the Chat MCP surface in [../../../.mcp.json](../../../.mcp.json). Set
+`ZOOM_CHAT_MCP_ACCESS_TOKEN` before enabling the plugin when a workflow needs Chat MCP tools.
 
 ## Authentication
 

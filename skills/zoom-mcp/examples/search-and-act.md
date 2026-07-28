@@ -65,8 +65,7 @@ create_new_file_with_markdown
   content: "# Decisions\n\n- ..."
 ```
 
-If using the dedicated `zoom-docs-mcp` server, switch to that server and call
-`create_file_with_content` instead.
+If using `zoom-canvas-mcp`, switch to that server and call `create_file_with_content` instead.
 
 ## When to Hand Off to REST
 
