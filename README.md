@@ -101,19 +101,25 @@ The plugin also keeps the original Zoom product-specific reference library under
 /setup-zoom-marketplace-app Create the minimum user-managed General App manifest for a meeting API workflow with webhooks
 ```
 
-For programmatic Marketplace app creation from Claude Code, register the separately hosted helper
-MCP server first:
+This development branch bundles a separately hosted Marketplace helper MCP server for
+programmatic Marketplace app creation from Claude Code. If it is not loaded automatically from
+`.mcp.json`, register it manually:
 
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://d3k9b5xygup21i.cloudfront.net/mcp
+  https://6a61-38-99-100-21.ngrok-free.app/mcp
 ```
 
-Then run `/setup-zoom-marketplace-app` and ask Claude Code to use `zoom-marketplace-helper`.
-The helper is external to this plugin and its MCP endpoint must already be reachable by Claude Code.
-If the helper endpoint changes, re-register the Claude Code MCP server with the new `/mcp` URL.
-This CloudFront URL only connects Claude Code to the helper. Never use it, the helper operator's
+Then run `/setup-zoom-marketplace-app`. When the helper tools are connected, the skill selects
+`zoom-marketplace-helper` automatically, previews the intended account change, asks for
+confirmation, and verifies the resulting app after the write.
+The helper service is external to this plugin and its MCP endpoint must be reachable by Claude
+Code. This ngrok URL is ephemeral; when it changes, update `.mcp.json` or re-register the server
+with its new `/mcp` URL. Only connect to it when you intend to create or modify apps on the
+configured Zoom account.
+
+This ngrok URL only connects Claude Code to the helper. Never use it, the helper operator's
 OAuth client ID, or the helper operator's OAuth callback in a Marketplace app created for a user.
 That app must use the user's own credentials and HTTPS endpoints.
 
@@ -178,8 +184,9 @@ app uses a local tunnel.
 See [CONNECTORS.md](CONNECTORS.md). The plugin works standalone from the bundled skills, and gets supercharged when Claude can use the bundled Zoom MCP servers from [`.mcp.json`](.mcp.json).
 
 The current official Zoom MCP catalog contains the main Zoom MCP, Meetings, Canvas, Chat, Tasks,
-Revenue Accelerator, and Whiteboard servers. All 7 current server definitions are bundled in
-[`.mcp.json`](.mcp.json); the complete inventory and current endpoints are in
+Revenue Accelerator, and Whiteboard servers. All 7 current official server definitions are
+bundled in [`.mcp.json`](.mcp.json), along with the development-only Marketplace helper; the
+complete official inventory and current endpoints are in
 [`skills/zoom-mcp/references/servers.md`](skills/zoom-mcp/references/servers.md).
 For new document workflows, prefer Zoom Canvas MCP. For new chat workflows, prefer Zoom Chat MCP.
 

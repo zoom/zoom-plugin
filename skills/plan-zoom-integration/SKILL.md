@@ -21,7 +21,7 @@ Create a practical build plan for a Zoom integration or app.
 
 1. Capture the target user flow and success criteria.
 2. Choose the correct Zoom surface and supporting services.
-3. Select the Marketplace app model and template, including ownership, scopes, products, events, callback URLs, and post-create setup.
+3. Select the Marketplace app model and template, including ownership, scopes, products, events, callback URLs, and post-create setup. If the user asks to execute the plan, chain through [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md) before OAuth or product implementation.
 4. Define auth requirements, token lifecycle, and account assumptions.
 5. Break implementation into phases: app registration, prototype, core integration, reliability, and launch.
 6. Call out hard risks early: manifest drift, master-scope access, OAuth setup, webhook verification, SDK environment limits, marketplace review, or MCP client constraints.

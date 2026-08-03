@@ -1,7 +1,7 @@
 {
   "name": "zoom-plugin",
   "description": "Claude plugin for planning, registering, building, and debugging Zoom integrations across Marketplace apps, REST APIs, SDKs, webhooks, bots, and MCP workflows",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "homepage": "https://developers.zoom.us/",
   "repository": "https://github.com/zoom/zoom-plugin",
   "license": "MIT",

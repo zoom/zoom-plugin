@@ -14,36 +14,55 @@ Set up the Zoom Marketplace app boundary before implementing OAuth, API, SDK, we
 2. Inspect the machine-readable template index and verify `app_type`, `usage`, `unsupported_app_types`, and `supports_manifest_update` before selecting the narrowest template.
 3. When the app requires public URLs, obtain the user's own HTTPS app base URL and implemented route paths before creating it. Use their hosted service, or help them expose their local app with ngrok or Cloudflare Tunnel. Do not invent an endpoint or reuse a helper operator's endpoint.
 4. For a new app, replace sample names, URLs, domains, contacts, commands, and scopes. Keep only scopes required by the exact operations.
-5. For an existing General App, export its complete manifest, apply the requested changes in memory, validate with its `app_id`, replace it with `PUT`, and export it again. Never apply a static template directly.
-6. For a new General App, validate the inner `manifest` and check both HTTP status and the response `ok` value before creating it through `/v2/marketplace/apps`.
-7. Create native S2S and Meeting SDK apps through `/v2/accounts/{accountId}/marketplace/apps` with the required master scope; these are create requests, not General App manifests.
-8. Complete post-create setup that the public schema does not reliably encode, including WebSocket delivery and some webhook or RTMS event subscriptions.
-9. Store generated secrets in a secret manager, record only safe environment-variable names, and return to the owning product workflow.
+5. Check whether tools from `zoom-marketplace-helper` are available. When the helper supports the required validation, creation, or update operation, use it as the preferred execution path without requiring the user to name the server again.
+6. Before any write operation, show a concise preview of the target account, app model, display name, user-owned URLs, scopes, products, and subscriptions, then obtain explicit confirmation.
+7. For an existing General App, export its complete manifest, apply the requested changes in memory, validate with its `app_id`, replace it, and export it again. Never apply a static template directly.
+8. For a new General App, validate the inner `manifest` and check both HTTP status and the response `ok` value before creating it.
+9. Create native S2S and Meeting SDK apps with the required master scope; these are create requests, not General App manifests.
+10. Complete post-create setup that the public schema does not reliably encode, including WebSocket delivery and some webhook or RTMS event subscriptions.
+11. Store generated secrets in a secret manager, record only safe environment-variable names, and return to the owning product workflow.
 
-## Optional Claude Code Marketplace Helper
+## Helper Tool Chaining
 
-To let Claude Code create or validate Marketplace apps programmatically, register a separately
-hosted Marketplace helper MCP server. This plugin does not bundle or host that helper server.
-Start the helper first, expose its `/mcp` endpoint over HTTPS, and register the current endpoint:
+- Apply this section whenever another plugin skill routes here, including `start`, planning,
+  OAuth, SDK, API, bot, webhook, and MCP workflows.
+- Discover the connected `zoom-marketplace-helper` tools and inspect their input schemas; do not
+  invent tool names or arguments.
+- Prefer a supported helper tool over asking the user to run Marketplace API requests manually.
+- Use read and validation operations before writes when the helper exposes them.
+- Treat create, update, credential generation, scope changes, subscription changes, and deletion
+  as account mutations. Require confirmation immediately before the first mutation and again if
+  the target account, app, URLs, scopes, or operation changes.
+- After a successful mutation, read back the app or exported manifest and compare it with the
+  approved configuration. Do not declare success from the write response alone.
+- If the helper is unavailable, unauthenticated, or does not support the required operation,
+  report that limitation and continue by producing the validated payload and exact manual or API
+  steps. Never claim that an app was created or changed when no write tool succeeded.
+- After app setup, return to the originating skill and continue its OAuth or product workflow.
+
+## Claude Code Marketplace Helper
+
+This development branch registers a separately hosted Marketplace helper in `.mcp.json`; it does
+not host the helper service. If Claude Code does not load the bundled definition, register the
+current endpoint manually:
 
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://d3k9b5xygup21i.cloudfront.net/mcp
+  https://6a61-38-99-100-21.ngrok-free.app/mcp
 ```
 
-The current helper endpoint is hosted at CloudFront. If it changes, update the Claude Code server
-registration with the new `/mcp` URL. If you run a different local helper instance, expose its
-port with `ngrok http HELPER_PORT` or `cloudflared tunnel --url http://localhost:HELPER_PORT`
-instead.
+The current helper endpoint uses ngrok and can change. If it changes, update `.mcp.json` or the
+Claude Code server registration with the new `/mcp` URL. If you run a different local helper
+instance, expose its port with `ngrok http HELPER_PORT` or
+`cloudflared tunnel --url http://localhost:HELPER_PORT` instead.
 The helper MCP URL is only a Claude Code server registration value. Never use its hostname,
 the helper operator's OAuth client ID, the helper operator's authorization URL, or the helper
 operator's callback URL as an OAuth redirect, home URL, allow-list entry, or webhook URL in an
 app created for a user.
 Only register a helper endpoint that you trust because it can create or modify Marketplace apps
-and may handle app credentials. After registration, use `/setup-zoom-marketplace-app` and tell
-Claude Code to use the `zoom-marketplace-helper` MCP server for the requested Marketplace
-operation.
+and may handle app credentials. After registration, use `/setup-zoom-marketplace-app`; this skill
+selects the helper automatically when its tools are available.
 
 ### Local Tunnel URL Synchronization
 

@@ -4,10 +4,15 @@ All notable changes to this plugin are documented in this file.
 
 ## Unreleased
 
+## 1.2.1
+
 - updated the Zoom MCP catalog for the seven current official product servers, including current Chat, Canvas, Tasks, Revenue Accelerator, Meetings, and Whiteboard endpoints and scopes
 - synced the canonical Marketplace template catalog, including Meetings, Canvas, Tasks, Revenue Accelerator, Chat, and Whiteboard MCP manifests plus legacy Docs compatibility
 - added the machine-readable template index and safe full-replacement workflow for updating existing General App manifests
 - updated product and MCP routing to distinguish General App manifests from native S2S and Meeting SDK create requests
+- bundled the development Marketplace helper MCP endpoint for programmatic app creation from Claude Code
+- chained Marketplace app workflows through the helper automatically with confirmation and read-back verification
+- required generated apps to use each user's own hosted or tunneled OAuth, home, and webhook endpoints instead of helper operator credentials or URLs
 
 ## 1.2.0
 

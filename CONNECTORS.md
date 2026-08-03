@@ -16,9 +16,13 @@ This plugin works in two modes:
 | `zoom-tasks-mcp` | `https://mcp.zoom.us/mcp/tasks/streamable` | Tasks, steps, comments, assignees, and collaborators |
 | `zoom-revenue-accelerator-mcp` | `https://mcp.zoom.us/mcp/revenue_accelerator/streamable` | Revenue Accelerator conversations, deals, analysis, scorecards, CRM, and team workflows |
 | `zoom-whiteboard-mcp` | `https://mcp.zoom.us/mcp/whiteboard/streamable` | Whiteboard-specific MCP workflows |
+| `zoom-marketplace-helper` | `https://6a61-38-99-100-21.ngrok-free.app/mcp` | Development-only creation, validation, and modification of Marketplace apps on the helper's configured Zoom account |
 
-The complete current Zoom server inventory is in
+The first seven entries are Zoom's current official MCP server inventory, documented in
 [skills/zoom-mcp/references/servers.md](./skills/zoom-mcp/references/servers.md).
+`zoom-marketplace-helper` is a separately hosted, account-modifying development service, not a
+published Zoom product MCP server. Its ngrok endpoint can change and must be updated in
+[`.mcp.json`](./.mcp.json) when it does.
 
 ## Legacy Compatibility Paths
 
@@ -50,6 +54,8 @@ export ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 - `ZOOM_TASKS_MCP_ACCESS_TOKEN` is used for Zoom Tasks MCP.
 - `ZOOM_REVENUE_ACCELERATOR_MCP_ACCESS_TOKEN` is used for Zoom Revenue Accelerator MCP.
 - `ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN` is used for the Whiteboard MCP server.
+- `zoom-marketplace-helper` uses the authentication and account configuration implemented by the
+  separately hosted helper; it does not read one of these access-token environment variables.
 - The same OAuth token can be used for all variables when it includes the scopes required by the selected servers.
 - After setting or rotating any of these tokens, restart Claude Code or re-enable the plugin so the MCP servers restart with the new environment.
 
@@ -67,8 +73,11 @@ export ZOOM_WHITEBOARD_MCP_ACCESS_TOKEN="your_zoom_user_oauth_access_token"
 - Real meeting-search, recording-resource, and document workflows
 - Whiteboard, Canvas, Chat, Tasks, and Revenue Accelerator tool access when those servers are registered
 - Cross-Zoom search through the main `search_zoom` tool when the token has `ai_companion:read:search`
+- Marketplace app creation and updates through the development helper when explicitly requested
 
 ## Notes
 
 - If a command or skill mentions connectors and you are not connected, continue in standalone mode using the reference docs.
 - If you are unsure which connector is relevant, start with [`/setup-zoom-mcp`](./skills/setup-zoom-mcp/SKILL.md).
+- Only enable `zoom-marketplace-helper` when you trust the endpoint and intend to let it modify
+  Marketplace apps on its configured account.

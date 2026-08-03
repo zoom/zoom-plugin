@@ -46,3 +46,6 @@ Use these only after selecting the workflow:
 2. Ask a short clarifier only when the route is genuinely ambiguous.
 3. Keep the first response architectural and actionable, then go deep.
 4. Pull in deeper references only when they directly help the current decision or implementation.
+5. When a requested integration needs a Marketplace app created, updated, or validated, chain
+   through [setup-zoom-marketplace-app](../setup-zoom-marketplace-app/SKILL.md) before OAuth or
+   product implementation, then resume the originating workflow.
