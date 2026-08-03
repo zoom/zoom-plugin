@@ -110,7 +110,9 @@ claude mcp add --transport http \
   https://d3k9b5xygup21i.cloudfront.net/mcp
 ```
 
-Then run `/setup-zoom-marketplace-app` and ask Claude Code to use `zoom-marketplace-helper`.
+Then run `/setup-zoom-marketplace-app`. When the helper tools are connected, the skill selects
+`zoom-marketplace-helper` automatically, previews the intended account change, asks for
+confirmation, and verifies the resulting app after the write.
 The helper is external to this plugin and its MCP endpoint must already be reachable by Claude Code.
 If the helper endpoint changes, re-register the Claude Code MCP server with the new `/mcp` URL.
 This CloudFront URL only connects Claude Code to the helper. Never use it, the helper operator's

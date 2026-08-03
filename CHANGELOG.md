@@ -8,6 +8,7 @@ All notable changes to this plugin are documented in this file.
 - synced the canonical Marketplace template catalog, including Meetings, Canvas, Tasks, Revenue Accelerator, Chat, and Whiteboard MCP manifests plus legacy Docs compatibility
 - added the machine-readable template index and safe full-replacement workflow for updating existing General App manifests
 - updated product and MCP routing to distinguish General App manifests from native S2S and Meeting SDK create requests
+- chained Marketplace app workflows through the helper automatically with confirmation and read-back verification
 
 ## 1.2.0
 
