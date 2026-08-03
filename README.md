@@ -101,18 +101,21 @@ The plugin also keeps the original Zoom product-specific reference library under
 /setup-zoom-marketplace-app Create the minimum user-managed General App manifest for a meeting API workflow with webhooks
 ```
 
-For programmatic Marketplace app creation from Claude Code, register a separately hosted helper
-MCP server first. Replace the example hostname with the current trusted helper endpoint:
+For programmatic Marketplace app creation from Claude Code, register the separately hosted helper
+MCP server first:
 
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://YOUR_HELPER_TUNNEL_HOST/mcp
+  https://d3k9b5xygup21i.cloudfront.net/mcp
 ```
 
 Then run `/setup-zoom-marketplace-app` and ask Claude Code to use `zoom-marketplace-helper`.
-The helper is external to this plugin. Its MCP endpoint must already be reachable by Claude Code;
-use an `ngrok` or Cloudflare Tunnel URL if the helper is running locally.
+The helper is external to this plugin and its MCP endpoint must already be reachable by Claude Code.
+If the helper endpoint changes, re-register the Claude Code MCP server with the new `/mcp` URL.
+This CloudFront URL only connects Claude Code to the helper. Never use it, the helper operator's
+OAuth client ID, or the helper operator's OAuth callback in a Marketplace app created for a user.
+That app must use the user's own credentials and HTTPS endpoints.
 
 #### Test a new app without deploying it
 
@@ -139,6 +142,10 @@ OAuth redirect URL:    https://YOUR_TUNNEL_HOST/oauth/callback
 Webhook endpoint URL:  https://YOUR_TUNNEL_HOST/webhooks/zoom
 ```
 
+If the user already has a hosted HTTPS service, use its routes instead. Build the OAuth
+authorization URL with the client ID Zoom issues for the user's app and the exact redirect URL
+configured for that app. Do not copy a maintainer, helper, sample, or previous user's OAuth URL.
+
 The tunnel only forwards requests; it does not create these routes or handle OAuth and webhook
 validation for you. Free or ephemeral tunnel URLs can change, so update the Marketplace app
 configuration and any generated manifest values whenever the tunnel hostname changes. Use a
@@ -149,7 +156,8 @@ host and route paths. After every tunnel restart, update the development OAuth r
 OAuth allow list, development home URL, and development webhook URL before testing. Keep the
 production URLs unchanged unless you intentionally want to test the tunnel as production.
 
-The app tunnel and the helper MCP endpoint are separate concerns. If both are running locally,
+The app tunnel and the helper MCP endpoint are separate concerns and their URLs are not
+interchangeable. If both are running locally,
 each service needs a publicly reachable HTTPS URL, or the helper can be deployed while only the
 app uses a local tunnel.
 

@@ -12,12 +12,13 @@ Set up the Zoom Marketplace app boundary before implementing OAuth, API, SDK, we
 
 1. Identify whether the task creates a new app or updates an existing app, then classify the product scenario, actor, account ownership, and app model.
 2. Inspect the machine-readable template index and verify `app_type`, `usage`, `unsupported_app_types`, and `supports_manifest_update` before selecting the narrowest template.
-3. For a new app, replace sample names, URLs, domains, contacts, commands, and scopes. Keep only scopes required by the exact operations.
-4. For an existing General App, export its complete manifest, apply the requested changes in memory, validate with its `app_id`, replace it with `PUT`, and export it again. Never apply a static template directly.
-5. For a new General App, validate the inner `manifest` and check both HTTP status and the response `ok` value before creating it through `/v2/marketplace/apps`.
-6. Create native S2S and Meeting SDK apps through `/v2/accounts/{accountId}/marketplace/apps` with the required master scope; these are create requests, not General App manifests.
-7. Complete post-create setup that the public schema does not reliably encode, including WebSocket delivery and some webhook or RTMS event subscriptions.
-8. Store generated secrets in a secret manager, record only safe environment-variable names, and return to the owning product workflow.
+3. When the app requires public URLs, obtain the user's own HTTPS app base URL and implemented route paths before creating it. Use their hosted service, or help them expose their local app with ngrok or Cloudflare Tunnel. Do not invent an endpoint or reuse a helper operator's endpoint.
+4. For a new app, replace sample names, URLs, domains, contacts, commands, and scopes. Keep only scopes required by the exact operations.
+5. For an existing General App, export its complete manifest, apply the requested changes in memory, validate with its `app_id`, replace it with `PUT`, and export it again. Never apply a static template directly.
+6. For a new General App, validate the inner `manifest` and check both HTTP status and the response `ok` value before creating it through `/v2/marketplace/apps`.
+7. Create native S2S and Meeting SDK apps through `/v2/accounts/{accountId}/marketplace/apps` with the required master scope; these are create requests, not General App manifests.
+8. Complete post-create setup that the public schema does not reliably encode, including WebSocket delivery and some webhook or RTMS event subscriptions.
+9. Store generated secrets in a secret manager, record only safe environment-variable names, and return to the owning product workflow.
 
 ## Optional Claude Code Marketplace Helper
 
@@ -28,13 +29,17 @@ Start the helper first, expose its `/mcp` endpoint over HTTPS, and register the 
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://YOUR_HELPER_TUNNEL_HOST/mcp
+  https://d3k9b5xygup21i.cloudfront.net/mcp
 ```
 
-Replace `YOUR_HELPER_TUNNEL_HOST` with the hostname for the running helper. If the helper is
-local, expose its port with `ngrok http HELPER_PORT` or
-`cloudflared tunnel --url http://localhost:HELPER_PORT`. A temporary tunnel URL can change when
-the tunnel restarts, so update the Claude Code server registration when that happens.
+The current helper endpoint is hosted at CloudFront. If it changes, update the Claude Code server
+registration with the new `/mcp` URL. If you run a different local helper instance, expose its
+port with `ngrok http HELPER_PORT` or `cloudflared tunnel --url http://localhost:HELPER_PORT`
+instead.
+The helper MCP URL is only a Claude Code server registration value. Never use its hostname,
+the helper operator's OAuth client ID, the helper operator's authorization URL, or the helper
+operator's callback URL as an OAuth redirect, home URL, allow-list entry, or webhook URL in an
+app created for a user.
 Only register a helper endpoint that you trust because it can create or modify Marketplace apps
 and may handle app credentials. After registration, use `/setup-zoom-marketplace-app` and tell
 Claude Code to use the `zoom-marketplace-helper` MCP server for the requested Marketplace
@@ -53,6 +58,11 @@ route paths. For a development configuration, update the matching fields in the 
 - `oauth_information.oauth_allow_list`
 - `features.development_home_uri`, when the app has a home URL
 - `event_subscription.subscriptions[].development_webhook_url`, when the app has webhooks
+
+Build any OAuth authorization URL from the client ID Zoom issues for the user's app and the
+exact redirect URI configured for that app. Do not substitute credentials or URLs from the
+Marketplace helper deployment. If a required app endpoint is not available, help the user start
+a tunnel or obtain their hosted endpoint before creating the app.
 
 After every tunnel restart, assume the previous hostname is invalid and update these development
 URLs before testing OAuth, opening the app home page, or waiting for webhook delivery. Do not
@@ -75,6 +85,9 @@ webhook validation behavior.
 - Do not use S2S for Meeting/Webinar RTMS or Team Chat chatbot subscriptions.
 - Do not invent `webhook` or `webhook_only` app types.
 - Do not use a General App manifest update workflow for native `s2s_oauth` or `meeting_sdk` apps.
+- Use only the user's own tunnel or hosted endpoints for their app's OAuth redirect, allow-list,
+  home, and webhook URLs. Never copy the Marketplace helper's endpoint or its operator's OAuth
+  app credentials into a user app.
 - Never remove existing scopes or event subscriptions during an update unless the user explicitly requests it.
 - Do not print, commit, or retain generated client secrets in logs or test artifacts.
 - Treat schema validation as necessary but not sufficient; licensing, entitlements, authorization, and Marketplace review can still block runtime use.

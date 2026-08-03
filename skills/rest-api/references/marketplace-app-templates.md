@@ -123,9 +123,14 @@ product's app model unless the child skill states otherwise.
    Marketplace app-creation scope. Follow
    [Bootstrap Requirement: Create the First App Manually](marketplace-apps.md#bootstrap-requirement-create-the-first-app-manually).
 1. Select the narrowest matching template.
-2. Replace all `example.com` URLs, app names, descriptions, domains, and contact fields.
-3. Check every OAuth scope against the exact target API operation. Remove unused scopes.
-4. For General Apps, extract and validate the inner manifest:
+2. Collect and confirm the user's own app base URL and implemented OAuth callback, home, and
+   webhook routes. If the user has no hosted HTTPS service, establish an ngrok or Cloudflare
+   Tunnel URL before continuing.
+3. Replace all `example.com` URLs, app names, descriptions, domains, and contact fields. Do not
+   use placeholders, the Marketplace helper endpoint, or URLs and OAuth details belonging to the
+   helper operator.
+4. Check every OAuth scope against the exact target API operation. Remove unused scopes.
+5. For General Apps, extract and validate the inner manifest:
 
 ```bash
 jq '{manifest: .manifest}' TEMPLATE.json > /tmp/manifest-validation.json
@@ -136,8 +141,8 @@ curl -X POST "https://api.zoom.us/v2/marketplace/apps/manifest/validate" \
   --data @/tmp/manifest-validation.json
 ```
 
-5. Check both HTTP status and `ok`; validation can return HTTP `200` with `ok: false`.
-6. Create General Apps through the regular endpoint:
+6. Check both HTTP status and `ok`; validation can return HTTP `200` with `ok: false`.
+7. Create General Apps through the regular endpoint:
 
 ```bash
 curl -X POST "https://api.zoom.us/v2/marketplace/apps" \
@@ -161,9 +166,13 @@ new app represented by `TEMPLATE.json`. For the account-scoped endpoint, verify 
 scope and account-owner requirement; an admin-scoped token is not interchangeable with a master
 token.
 
-7. Store returned client secrets in a secret manager. Never print, commit, or retain them in
+After creation, build any user-facing OAuth authorization URL with the new app's returned client
+ID and the user-owned redirect URI in that app's configuration. Never reuse a maintainer's or
+helper operator's OAuth client ID or redirect URI.
+
+8. Store returned client secrets in a secret manager. Never print, commit, or retain them in
    test artifacts.
-8. Fetch the created app or exported General App manifest and compare it with the intended
+9. Fetch the created app or exported General App manifest and compare it with the intended
    configuration because Marketplace can normalize or omit fields.
 
 For an existing General App, do not use the create workflow as an update shortcut. Follow

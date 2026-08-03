@@ -102,6 +102,8 @@ When updating an MCP app:
 - Export the existing app before changing scopes or PKCE settings.
 - Keep `usage: "USER_OPERATION"` for the currently supported hosted MCP user flows.
 - Keep the MCP client's exact redirect URI and OAuth allow list.
+- Use the app owner's own tunnel or hosted endpoints. Never replace app URLs with the Marketplace
+  helper endpoint, its operator's OAuth callback, or URLs from another app or user.
 - If local testing uses ngrok or Cloudflare Tunnel, refresh the development redirect URL, OAuth
   allow list, home URL, and webhook URL after every tunnel hostname change; leave production URLs
   unchanged unless explicitly requested.

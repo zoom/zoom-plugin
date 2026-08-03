@@ -264,7 +264,10 @@ Official schema sources:
 
 For reusable request bodies, use [Marketplace App Templates](marketplace-app-templates.md).
 Select the closest scenario, replace every `example.com` value, reduce scopes to the exact
-operations required, validate General App manifests, and then create the app.
+operations required, validate General App manifests, and then create the app. Use only the app
+owner's own tunnel or hosted endpoints for OAuth redirects, allow lists, home URLs, and webhook
+URLs. A Marketplace helper's MCP URL and its operator's OAuth credentials or callbacks are never
+app manifest values.
 
 ### General App Create/Get/Manifest/Update/Delete Shapes
 
