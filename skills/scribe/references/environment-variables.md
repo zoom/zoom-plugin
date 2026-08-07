@@ -16,6 +16,10 @@ Do not treat shell placeholders such as `${ZOOM_API_KEY}` as valid configured va
 | `PORT` | No | Local server port |
 | `LANGUAGE` | No | Default language code such as `en-US` |
 
+Live Mode uses the same Build-platform key and secret to generate the JWT attached to the
+backend's upstream WebSocket handshake. Do not expose either credential or the generated JWT to
+browser code. No separate Scribe Live access-token variable is required.
+
 ## Batch / S3 Variables
 
 | Variable | Required for batch | Description |

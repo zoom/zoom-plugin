@@ -1,6 +1,7 @@
 # Scribe Transcription Pipeline
 
-Use AI Services Scribe when the input is already a file or storage object and the output should be a transcript JSON payload or transcript files.
+Use AI Services Scribe when live audio, a file, or a storage object should become transcript
+segments, a transcript JSON payload, or transcript files.
 
 ## Skill Chain
 
@@ -11,12 +12,13 @@ Use AI Services Scribe when the input is already a file or storage object and th
 ## When to Use Scribe
 
 Use `scribe` for:
+- generic continuous audio for voice agents, captions, or microphone transcription
 - one uploaded file that should be transcribed immediately
 - S3 archive transcription in the background
 - post-processing exported media files into searchable transcript data
 
 Do not use `scribe` for:
-- live in-meeting media stream ingestion
+- Zoom meeting-native multi-modal stream ingestion
 - bot-style participant join and raw recording
 
 For those, use:
@@ -26,33 +28,40 @@ For those, use:
 ## Minimal Flow
 
 ```text
-input file or storage prefix
+live audio, input file, or storage prefix
   -> generate Build JWT
-  -> choose fast mode or batch mode
-  -> submit Scribe request
-  -> receive transcript JSON or batch job state
+  -> choose live, fast, or batch mode
+  -> stream audio or submit Scribe request
+  -> receive transcript events, JSON, or batch job state
   -> persist transcript output
 ```
 
 ## Typical Variants
 
-1. Fast mode
+1. Live mode
+   - continuous PCM16 audio
+   - authenticated backend WebSocket relay
+   - `wss://api.zoom.us/v2/aiservices/scribe/live`
+
+2. Fast mode
    - one short file
    - immediate response needed
    - `POST /aiservices/scribe/transcribe`
 
-2. Batch mode
+3. Batch mode
    - long recordings or many files
    - `POST /aiservices/scribe/jobs`
    - monitor with polling or webhook notifications
 
-3. Zoom recording re-transcription
+4. Zoom recording re-transcription
    - use REST API to download or export recording files
    - feed those files into Scribe for your own transcript settings
 
 ## Common Failure Points
 
 - wrong credential type (Build JWT vs normal OAuth token)
+- exposing the Build JWT in browser code instead of using a backend relay
+- sending encoded/JSON audio instead of binary PCM16 little-endian, 16 kHz, mono frames
 - choosing RTMS for offline archive transcription
 - expired S3 credentials for batch jobs
 - webhook signature verification implemented after JSON parsing instead of on raw body

@@ -69,18 +69,31 @@ Guardrail:
 - keep `scribe` focused on transcription
 - do sentiment analysis, keyword detection, or scoring in downstream services after transcript generation
 
-## Scenario 6: Browser Microphone Incremental Transcript
+## Scenario 6: Live Voice Agent or Browser Captions
 
-Use when a web page should capture microphone audio and show transcript updates every few seconds without switching to RTMS.
+Use Live Mode when a voice agent, caption UI, or browser microphone flow needs continuous
+segment-level transcription without waiting for file uploads.
 
 Flow:
-1. Browser captures microphone audio with `MediaRecorder`.
-2. Browser flushes one chunk every `5 seconds`.
-3. Backend accepts each chunk as a normal fast-mode upload through the async wrapper.
-4. Frontend polls by request ID and appends transcript chunks in order.
+1. Browser or audio source sends PCM16 frames to your authenticated backend relay.
+2. Relay connects to `wss://api.zoom.us/v2/aiservices/scribe/live` with `live-asr` and a Build JWT.
+3. Relay sends `session.update` and forwards binary 16 kHz mono PCM16 frames.
+4. Application consumes `transcription.completed` events and persists completed segments.
+5. Application sends `session.close` and drains final events before disconnecting.
 
 Guardrail:
-- this is pseudo-streaming over repeated file uploads
-- this is best kept as a lightweight demo or constrained fallback
-- do not choose it first for a true live-transcription product
-- if the requirement is truly live media stream ingestion or lower-latency continuous audio, route to `rtms`
+- keep the Zoom JWT and Build credentials on the backend
+- use RTMS instead when the source is a Zoom meeting and the workflow needs meeting-native media,
+  participant context, video, screen share, chat, or transcript streams
+
+## Scenario 7: Legacy Browser Microphone Chunking
+
+Use repeated Fast Mode uploads only when a backend WebSocket relay cannot be deployed.
+
+Flow:
+1. Browser records standalone `5-10` second files.
+2. Backend submits each file through an async Fast Mode wrapper.
+3. Frontend polls by request ID and appends results in order.
+
+This fallback has upload overhead, file-container boundaries, and transcript stitching drift.
+Do not choose it over Live Mode for new continuous-audio products.

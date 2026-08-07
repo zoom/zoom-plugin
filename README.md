@@ -107,7 +107,7 @@ MCP server first:
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://d3k9b5xygup21i.cloudfront.net/mcp
+  https://marketplacehelper.asdc.cc/mcp
 ```
 
 Then run `/setup-zoom-marketplace-app`. When the helper tools are connected, the skill selects
@@ -115,7 +115,7 @@ Then run `/setup-zoom-marketplace-app`. When the helper tools are connected, the
 confirmation, and verifies the resulting app after the write.
 The helper is external to this plugin and its MCP endpoint must already be reachable by Claude Code.
 If the helper endpoint changes, re-register the Claude Code MCP server with the new `/mcp` URL.
-This CloudFront URL only connects Claude Code to the helper. Never use it, the helper operator's
+This helper URL only connects Claude Code to the helper. Never use it, the helper operator's
 OAuth client ID, or the helper operator's OAuth callback in a Marketplace app created for a user.
 That app must use the user's own credentials and HTTPS endpoints.
 

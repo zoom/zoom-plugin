@@ -20,10 +20,10 @@ Scribe sits under `AI Services`, but related Zoom products may point users towar
 - blog or marketing material that frames Scribe inside broader speech/insights workflows
 
 Keep the guardrail clear:
-- `scribe` = file/storage transcription service
+- `scribe` = generic live audio plus file/storage transcription service
 - `summarizer` = transcript summarization service
 - `translator` = plain-text translation service
-- `rtms` = live media stream ingestion
+- `rtms` = Zoom meeting-native audio/video/transcript/share/chat stream ingestion
 - Meeting SDK Linux = participant bot capture / raw recording
 
 ## Workflow-Claim Drift
@@ -36,14 +36,16 @@ Some AI Services and Scribe blog material frames Scribe inside broader voice-ins
 - customer-support QA pipelines
 - sentiment or keyword-driven downstream analytics
 
-These are valid architectural use cases, but they do not expand the current documented Scribe endpoint surface.
+These are valid architectural use cases. Live audio transcription is now part of the documented
+Scribe endpoint surface, but downstream analytics still require separate services or application
+logic.
 
 Implementation rule:
 - use `scribe` for transcript generation
 - use `summarizer` for transcript recap, summary, and action item workflows
 - use `translator` for text localization workflows
 - use your own downstream pipeline for sentiment, classification, or QA scoring
-- do not infer undocumented real-time or analytics endpoints from blog phrasing alone
+- use Scribe Live Mode only through its documented WebSocket protocol; do not infer additional analytics endpoints from blog phrasing
 
 ## API Surface Drift Watchpoints
 
@@ -53,6 +55,7 @@ Watch for changes in:
 - webhook signature header conventions
 - response summary/file schemas
 - language / output-format support
+- Live Mode event types, audio format requirements, session limits, and concurrency tiers
 
 ## Review Trigger
 
@@ -60,3 +63,4 @@ Re-review this skill when:
 - `api-hub/ai-services/methods/endpoints.json` changes
 - AI Services docs rename Build/API credentials again
 - quickstart sample changes webhook or upload patterns
+- Live Mode documentation or the quickstart relay protocol changes

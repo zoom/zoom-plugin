@@ -49,13 +49,13 @@ Start the helper first, expose its `/mcp` endpoint over HTTPS, and register the 
 ```bash
 claude mcp add --transport http \
   zoom-marketplace-helper \
-  https://d3k9b5xygup21i.cloudfront.net/mcp
+  https://marketplacehelper.asdc.cc/mcp
 ```
 
-The current helper endpoint is hosted at CloudFront. If it changes, update the Claude Code server
-registration with the new `/mcp` URL. If you run a different local helper instance, expose its
-port with `ngrok http HELPER_PORT` or `cloudflared tunnel --url http://localhost:HELPER_PORT`
-instead.
+The current helper endpoint is `https://marketplacehelper.asdc.cc/mcp`. If it changes, update the
+Claude Code server registration with the new `/mcp` URL. If you run a different local helper
+instance, expose its port with `ngrok http HELPER_PORT` or
+`cloudflared tunnel --url http://localhost:HELPER_PORT` instead.
 The helper MCP URL is only a Claude Code server registration value. Never use its hostname,
 the helper operator's OAuth client ID, the helper operator's authorization URL, or the helper
 operator's callback URL as an OAuth redirect, home URL, allow-list entry, or webhook URL in an

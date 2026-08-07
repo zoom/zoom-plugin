@@ -105,12 +105,13 @@ Guardrail:
 ## 8. Wrong product chosen
 
 Symptoms:
-- trying to use Scribe for live in-meeting media
+- trying to use Scribe Live Mode when the workflow needs Zoom meeting-native participant/media context
 - trying to use RTMS for offline archive transcription
 
 Guardrail:
 - file/storage transcription -> `scribe`
-- live meeting media -> `rtms`
+- generic continuous audio transcription -> Scribe Live Mode
+- Zoom meeting-native audio/video/transcript/share/chat streams -> `rtms`
 
 ## 9. Browser microphone chunk 1 works but later chunks are empty
 
@@ -133,3 +134,49 @@ Preferred fix:
 
 Guardrail:
 - treat browser microphone pseudo-streaming as a file-container problem first, not a Scribe-language-model problem
+
+## 10. Live Mode WebSocket handshake fails
+
+Likely causes:
+- missing `live-asr` subprotocol
+- missing, expired, or invalid Zoom AI Services JWT
+- credentials are not provisioned for AI Services
+- account concurrency limit reached
+
+Check the upstream HTTP status before treating it as a generic socket failure:
+- `401`/`403`: verify Build credentials and JWT generation
+- `404`: verify AI Services provisioning and the exact `/v2/aiservices/scribe/live` endpoint
+- `429`: enforce concurrency limits and retry with backoff
+
+## 11. Live Mode connects but no transcript arrives
+
+Check:
+- `session.update` was sent after the socket opened
+- `audio.format` is exactly `pcm16`
+- audio is binary PCM16 little-endian, 16 kHz, mono
+- frames are approximately 100 ms rather than Base64 or JSON-wrapped audio
+- the session has not hit the 30-second no-audio idle timeout
+- speech start/stop events and all server `error` events are logged
+
+## 12. Browser Live Mode authentication fails
+
+Cause:
+- browser WebSocket clients cannot attach the required `Authorization` header, or credentials
+  were incorrectly placed in client-side code
+
+Fix:
+- connect the browser to an authenticated backend WebSocket relay
+- generate the AI Services JWT on that backend
+- let the backend open the authenticated Zoom socket and preserve text/binary frame types
+
+## 13. Final words are missing when stopping Live Mode
+
+Likely cause:
+- the client closed the WebSocket immediately after the last audio frame
+
+Fix:
+1. stop sending audio
+2. send `{ "type": "session.close" }`
+3. continue reading final `transcription.completed` events
+4. wait for `session.closed`
+5. close the socket

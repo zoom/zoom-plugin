@@ -3,12 +3,14 @@
 Canonical sources:
 - OpenAPI JSON: https://developers.zoom.us/api-hub/ai-services/methods/endpoints.json
 - Docs overview: https://developers.zoom.us/docs/ai-services/scribe/
+- Live Mode: https://developers.zoom.us/docs/ai-services/scribe/live-mode/
 - Base URL: `https://api.zoom.us/v2`
 
 ## Endpoint Inventory
 
 | Method | Endpoint | Summary | Operation ID |
 |--------|----------|---------|-------------|
+| WebSocket | `wss://api.zoom.us/v2/aiservices/scribe/live` | Live audio transcription | Not a REST operation |
 | POST | `/aiservices/scribe/transcribe` | Scribe (Synchronous) | `createFastAsr` |
 | POST | `/aiservices/scribe/jobs` | Submit Batch Scribe Job | `submitBatchAsr` |
 | GET | `/aiservices/scribe/jobs` | List Batch Jobs | `listBatchJobs` |
@@ -16,6 +18,52 @@ Canonical sources:
 | DELETE | `/aiservices/scribe/jobs/{jobId}` | Cancel Batch Job | `cancelBatchJob` |
 | GET | `/aiservices/scribe/jobs/{jobId}/files` | List Batch Job Files | `listBatchJobFiles` |
 | GET | `/aiservices/scribe/jobs/{jobId}/files/{fileId}` | Get Batch Scribe Job File | `getBatchScribeJobFile` |
+
+## Live Mode Contract
+
+Connection requirements:
+- WebSocket endpoint: `wss://api.zoom.us/v2/aiservices/scribe/live`
+- subprotocol: `live-asr`
+- header: `Authorization: Bearer <Zoom AI Services JWT>`
+- connect from a trusted backend; browsers cannot set the required WebSocket authorization header
+
+Session configuration:
+
+```json
+{
+  "type": "session.update",
+  "language": "en-US",
+  "audio": {
+    "format": "pcm16"
+  }
+}
+```
+
+Audio requirements:
+- binary PCM16 frames, not JSON or Base64
+- little-endian, 16 kHz, mono
+- approximately 100 ms per frame
+
+Documented server events:
+
+| Event | Important fields |
+|-------|------------------|
+| `session.created` | `session_id` |
+| `session.updated` | none |
+| `input_audio_buffer.speech_started` | `item_id`, `audio_start_ms` |
+| `input_audio_buffer.speech_stopped` | `item_id`, `audio_end_ms` |
+| `transcription.completed` | `item_id`, `transcript`, `audio_start_ms`, `audio_end_ms`, `transcription_latency_ms` |
+| `error` | `error.code`, `error.message`, `error.fatal` |
+| `session.closed` | `reason` |
+
+Close by stopping audio, sending `{ "type": "session.close" }`, draining remaining final
+transcription events through `session.closed`, and then closing the socket.
+
+Live Mode defaults:
+- maximum session duration: 60 minutes
+- idle timeout: 30 seconds without audio
+- concurrent sessions per account: Default 20, Enterprise 100, Large Contact Center 1,000,
+  Custom 5,000+
 
 ## Request Shapes
 
